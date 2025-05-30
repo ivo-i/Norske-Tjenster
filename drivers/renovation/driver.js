@@ -163,16 +163,17 @@ class Renovation extends Driver {
     let config = {
       method: "get",
       maxBodyLength: Infinity,
-      url: "https://api.avfallskalender.no/v1/calendar/" + data.provider + "/" + data.addressID,
+      url: "https://pp08kp3lfg.execute-api.eu-north-1.amazonaws.com/v1/waste/calendar/" + data.provider + "/" + data.addressID,
       headers: {
         "x-api-key": Homey.env.API_KEY,
       },
     }
 
     if (data.provider == "Min Renovasjon") {
-      config.url = "https://api.avfallskalender.no/v1/calendar/" + data.provider + "/" + data.addressID + "/" + data.addressCode + "/" + data.countyId
+      config.url = "https://pp08kp3lfg.execute-api.eu-north-1.amazonaws.com/v1/waste/calendar/" + data.provider + "/" + data.addressID + "/" + data.addressCode + "/" + data.countyId
     } else if (data.provider == "IRIS") {
-      config.url = "https://api.avfallskalender.no/v1/calendar/" + data.provider + "/" + data.addressID + "/:streetCode/:countyID/" + data.kommune + "/" + data.addressName
+      config.url =
+        "https://pp08kp3lfg.execute-api.eu-north-1.amazonaws.com/v1/waste/calendar/" + data.provider + "/" + data.addressID + "/:streetCode/:countyID/" + data.kommune + "/" + data.addressName
     }
 
     try {
