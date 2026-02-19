@@ -1,4 +1,68 @@
 {
+	"pair": {
+		"title": "Konfigurasjon",
+		"enter-details": "Oppgi detaljer",
+		"address": "Adresse:",
+		"next": "Neste",
+		"errors": {
+			"unsupported_municipality": "Kommunen ser ikke ut til å være støttet ennå.",
+			"unsupported_address": "Kommunen er støttet, men adressesøket ga ingen resultater.",
+			"network_error": "Nettverksfeil. Sjekk tilkoblingen eller prøv igjen senere.",
+			"address_required": "Vennligst velg en adresse fra listen."
+		},
+		"skimore": {
+			"title": "Skianlegg",
+			"select_resort": "Velg anlegg",
+			"resort_label": "Anlegg:",
+			"next": "Neste",
+			"errors": {
+				"no_resort": "Vennligst velg et anlegg.",
+				"invalid_resort": "Det valgte anlegget er ugyldig."
+			}
+		}
+	},
+	"fractions": {
+		"general": {
+			"short": "Rest",
+			"medium": "Restavfall",
+			"long": "Restavfall"
+		},
+		"food": {
+			"short": "Mat",
+			"medium": "Matavfall",
+			"long": "Matavfall"
+		},
+		"paper": {
+			"short": "Papir",
+			"medium": "Papir/Papp",
+			"long": "Papir og papp"
+		},
+		"plastic": {
+			"short": "Plast",
+			"medium": "Plast",
+			"long": "Plastemballasje"
+		},
+		"glass": {
+			"short": "Glass",
+			"medium": "Glass/Metall",
+			"long": "Glass- og metallemballasje"
+		},
+		"hazardous": {
+			"short": "Farlig",
+			"medium": "Farlig avfall",
+			"long": "Farlig avfall"
+		},
+		"garden": {
+			"short": "Hage",
+			"medium": "Hageavfall",
+			"long": "Hageavfall"
+		}
+	},
+	"grammar": {
+		"day": "dag",
+		"days": "dager",
+		"until": "til"
+	},
 	"renovation": {
 		"pair": {
 			"title": "Renovasjon",

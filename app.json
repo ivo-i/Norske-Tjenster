@@ -1086,188 +1086,24 @@
         "en": "Waste collection",
         "no": "Renovasjon"
       },
-      "deprecated": true,
       "class": "sensor",
       "capabilities": [
-        "measure_next_waste_days_left"
+        "pickup_glass",
+        "pickup_food",
+        "pickup_paper",
+        "pickup_plastic",
+        "pickup_general",
+        "pickup_hazardous",
+        "pickup_garden",
+        "pickup_next_fractions",
+        "pickup_next"
       ],
-      "uiComponent": "sensor",
       "platforms": [
         "local"
       ],
-      "connectivity": [],
-      "images": {
-        "small": "/drivers/renovasjon/assets/images/small.png",
-        "large": "/drivers/renovasjon/assets/images/large.png"
-      },
-      "icon": "/drivers/renovasjon/assets/icon.svg",
-      "pair": [
-        {
-          "id": "start",
-          "navigation": {
-            "next": "loadingData"
-          }
-        },
-        {
-          "id": "loadingData"
-        },
-        {
-          "id": "list_devices",
-          "template": "list_devices",
-          "navigation": {
-            "next": "add_devices",
-            "prev": "start"
-          },
-          "options": {
-            "singular": true
-          }
-        },
-        {
-          "id": "add_devices",
-          "template": "add_devices"
-        }
+      "connectivity": [
+        "cloud"
       ],
-      "energy": {
-        "approximation": {
-          "usageConstant": 0
-        }
-      },
-      "id": "renovasjon",
-      "settings": [
-        {
-          "type": "group",
-          "label": {
-            "no": "Adresse innstillinger",
-            "en": "Address settings"
-          },
-          "children": [
-            {
-              "id": "streetName",
-              "type": "label",
-              "label": {
-                "no": "Gatenavn",
-                "en": "Street name"
-              }
-            },
-            {
-              "id": "houseNumber",
-              "type": "label",
-              "label": {
-                "no": "Husnummer",
-                "en": "House number"
-              }
-            },
-            {
-              "id": "postCode",
-              "type": "label",
-              "label": {
-                "no": "Postnummer",
-                "en": "Postal code"
-              }
-            },
-            {
-              "id": "countyId",
-              "type": "label",
-              "label": {
-                "no": "Kommunenr",
-                "en": "County ID"
-              }
-            },
-            {
-              "id": "addressCode",
-              "type": "label",
-              "label": {
-                "no": "Adressekode",
-                "en": "Address code"
-              }
-            },
-            {
-              "id": "provider",
-              "type": "label",
-              "label": {
-                "no": "Leverandør",
-                "en": "Service provider"
-              }
-            },
-            {
-              "id": "addressID",
-              "type": "label",
-              "label": {
-                "no": "AdresseID hos din leverandør",
-                "en": "AddressID with your provider"
-              }
-            }
-          ]
-        },
-        {
-          "type": "group",
-          "label": {
-            "no": "Avfallsinnstillinger",
-            "en": "Waste settings"
-          },
-          "children": [
-            {
-              "id": "wasteTypeGeneral",
-              "type": "checkbox",
-              "label": {
-                "no": "Restavfall",
-                "en": "General waste"
-              }
-            },
-            {
-              "id": "wasteTypeGeneral",
-              "type": "checkbox",
-              "value": false,
-              "label": {
-                "no": "Restavfall",
-                "en": "General waste"
-              }
-            },
-            {
-              "id": "wasteTypePaper",
-              "type": "checkbox",
-              "value": false,
-              "label": {
-                "no": "Papp/papiravffall",
-                "en": "Paper waste"
-              }
-            },
-            {
-              "id": "wasteTypeBio",
-              "type": "checkbox",
-              "value": false,
-              "label": {
-                "no": "Matavfall",
-                "en": "Bio waste"
-              }
-            },
-            {
-              "id": "wasteTypePlastic",
-              "type": "checkbox",
-              "value": false,
-              "label": {
-                "no": "Plastavfall",
-                "en": "Plastic waste"
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": {
-        "en": "Waste collection",
-        "no": "Renovasjon"
-      },
-      "class": "sensor",
-      "capabilities": [
-        "measure_next_waste_days_left"
-      ],
-      "uiComponent": "sensor",
-      "platforms": [
-        "local"
-      ],
-      "connectivity": [],
       "images": {
         "small": "/drivers/renovation/assets/images/small.png",
         "large": "/drivers/renovation/assets/images/large.png"
@@ -1275,17 +1111,13 @@
       "icon": "/drivers/renovation/assets/icon.svg",
       "pair": [
         {
-          "id": "start"
+          "id": "enter_details"
         },
         {
           "id": "list_devices",
           "template": "list_devices",
           "navigation": {
-            "next": "add_devices",
-            "prev": "start"
-          },
-          "options": {
-            "singular": true
+            "next": "add_devices"
           }
         },
         {
@@ -1303,71 +1135,35 @@
         {
           "type": "group",
           "label": {
-            "no": "Avfallskalender API",
-            "en": "Waste calendar API"
+            "en": "Address",
+            "no": "Adresse"
           },
           "children": [
             {
-              "id": "apiVersion",
+              "id": "streetAddress",
               "type": "label",
-              "value": "1.0.0",
+              "value": "",
               "label": {
-                "no": "API versjon",
-                "en": "API version"
+                "en": "Street address",
+                "no": "Gateadresse"
               }
-            }
-          ]
-        },
-        {
-          "type": "group",
-          "label": {
-            "no": "Adresse innstillinger",
-            "en": "Address settings"
-          },
-          "children": [
+            },
             {
-              "id": "address",
+              "id": "municipality",
               "type": "label",
-              "value": "-",
+              "value": "",
               "label": {
-                "no": "Adresse",
-                "en": "Address"
+                "en": "Municipality",
+                "no": "Kommune"
               }
             },
             {
               "id": "provider",
               "type": "label",
-              "value": "-",
+              "value": "",
               "label": {
-                "no": "Leverandør",
-                "en": "Service provider"
-              }
-            },
-            {
-              "id": "addressID",
-              "type": "label",
-              "value": "-",
-              "label": {
-                "no": "AdresseID hos leverandør",
-                "en": "AddressID with your provider"
-              }
-            },
-            {
-              "id": "countyId",
-              "type": "label",
-              "value": "-",
-              "label": {
-                "no": "Kommunenr",
-                "en": "County ID"
-              }
-            },
-            {
-              "id": "addressCode",
-              "type": "label",
-              "value": "-",
-              "label": {
-                "no": "Adressekode",
-                "en": "Address code"
+                "en": "Waste service",
+                "no": "Avfallstjeneste"
               }
             }
           ]
@@ -1375,94 +1171,122 @@
         {
           "type": "group",
           "label": {
-            "no": "Flow innstillinger [BETA]",
-            "en": "Flow settings [BETA]"
+            "en": "Time settings",
+            "no": "Tidsinnstillinger"
           },
           "children": [
             {
-              "id": "flowTime",
-              "type": "text",
-              "value": "20:00",
+              "id": "relative_time",
+              "type": "dropdown",
               "label": {
-                "no": "Når skal flowen kjøres? (time)",
-                "en": "When should the flow run? (hour)"
+                "en": "Show pickup times as relative",
+                "no": "Vis relative hentetider"
               },
-              "hint": {
-                "no": "Format: HH:MM",
-                "en": "Format: HH:MM"
-              }
+              "value": "false",
+              "values": [
+                {
+                  "id": "false",
+                  "label": {
+                    "en": "No",
+                    "no": "Nei"
+                  }
+                },
+                {
+                  "id": "true",
+                  "label": {
+                    "en": "Yes",
+                    "no": "Ja"
+                  }
+                },
+                {
+                  "id": "only_next",
+                  "label": {
+                    "en": "Only for Next pickup",
+                    "no": "Bare for Neste henting"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "show_next_fractions",
+              "type": "checkbox",
+              "label": {
+                "en": "Show types in Next pickup",
+                "no": "Vis typer i Neste henting"
+              },
+              "value": false
             }
           ]
         },
         {
           "type": "group",
           "label": {
-            "no": "Avfallsinnstillinger",
-            "en": "Waste settings"
+            "en": "Show waste types",
+            "no": "Vis avfallstyper"
           },
           "children": [
             {
-              "id": "waste_general",
+              "id": "show_fraction_general",
               "type": "checkbox",
-              "value": true,
               "label": {
-                "no": "Restavfall",
-                "en": "General waste"
-              }
+                "en": "Show Residual waste",
+                "no": "Vis Restavfall"
+              },
+              "value": true
             },
             {
-              "id": "waste_paper",
+              "id": "show_fraction_food",
               "type": "checkbox",
-              "value": true,
               "label": {
-                "no": "Papp/papiravfall",
-                "en": "Paper waste"
-              }
+                "en": "Show Food waste",
+                "no": "Vis Matavfall"
+              },
+              "value": true
             },
             {
-              "id": "waste_plastic",
+              "id": "show_fraction_paper",
               "type": "checkbox",
-              "value": true,
               "label": {
-                "no": "Plastavfall",
-                "en": "Plastic waste"
-              }
+                "en": "Show Paper/Cardboard",
+                "no": "Vis Papir/Papp"
+              },
+              "value": true
             },
             {
-              "id": "waste_bio",
+              "id": "show_fraction_plastic",
               "type": "checkbox",
-              "value": true,
               "label": {
-                "no": "Matavfall",
-                "en": "Bio waste"
-              }
+                "en": "Show Plastic",
+                "no": "Vis Plast"
+              },
+              "value": true
             },
             {
-              "id": "waste_glass",
+              "id": "show_fraction_glass",
               "type": "checkbox",
-              "value": true,
               "label": {
-                "no": "Glass/metallavfall",
-                "en": "Glass/metal waste"
-              }
+                "en": "Show Glass/Metal",
+                "no": "Vis Glass/Metall"
+              },
+              "value": true
             },
             {
-              "id": "waste_garden",
+              "id": "show_fraction_hazardous",
               "type": "checkbox",
-              "value": true,
               "label": {
-                "no": "Hageavfall",
-                "en": "Garden waste"
-              }
+                "en": "Show Hazardous waste",
+                "no": "Vis Farlig avfall"
+              },
+              "value": true
             },
             {
-              "id": "waste_christmastree",
+              "id": "show_fraction_garden",
               "type": "checkbox",
-              "value": true,
               "label": {
-                "no": "Juletre",
-                "en": "Christmas tree"
-              }
+                "en": "Show Garden waste",
+                "no": "Vis Hageavfall"
+              },
+              "value": true
             }
           ]
         }
@@ -1631,6 +1455,77 @@
             "no": "Badeplassens ID",
             "en": "Bathing spot ID"
           }
+        }
+      ]
+    },
+    {
+      "name": {
+        "en": "Ski resort",
+        "no": "Skianlegg"
+      },
+      "class": "sensor",
+      "capabilities": [
+        "measure_temperature",
+        "measure_humidity",
+        "ski_precipitation",
+        "ski_open_lifts",
+        "ski_open_slopes",
+        "ski_opening_today",
+        "ski_opening_tomorrow",
+        "ski_snow_production",
+        "ski_latest_message"
+      ],
+      "platforms": [
+        "local"
+      ],
+      "connectivity": [
+        "cloud"
+      ],
+      "images": {
+        "small": "/drivers/skimore/assets/images/small.png",
+        "large": "/drivers/skimore/assets/images/large.png"
+      },
+      "icon": "/drivers/skimore/assets/icon.svg",
+      "pair": [
+        {
+          "id": "select_resort"
+        },
+        {
+          "id": "list_devices",
+          "template": "list_devices",
+          "navigation": {
+            "next": "add_devices"
+          }
+        },
+        {
+          "id": "add_devices",
+          "template": "add_devices"
+        }
+      ],
+      "energy": {
+        "approximation": {
+          "usageConstant": 0
+        }
+      },
+      "id": "skimore",
+      "settings": [
+        {
+          "type": "group",
+          "label": {
+            "en": "Resort",
+            "no": "Anlegg"
+          },
+          "children": [
+            {
+              "id": "resort_name",
+              "type": "label",
+              "value": "",
+              "label": {
+                "en": "Resort",
+                "no": "Anlegg"
+              }
+            }
+          ]
         }
       ]
     }
@@ -2424,44 +2319,6 @@
         ]
       },
       {
-        "id": "isWaste",
-        "title": {
-          "no": "Søppel hentes !{{|ikke}}",
-          "en": "Waste is !{{|not}} picked up"
-        },
-        "titleFormatted": {
-          "no": "Søppel hentes !{{|ikke}} [[when]]",
-          "en": "Waste is !{{|not}} picked up [[when]]"
-        },
-        "args": [
-          {
-            "type": "device",
-            "name": "device",
-            "filter": "driver_id=renovasjon"
-          },
-          {
-            "type": "dropdown",
-            "name": "when",
-            "values": [
-              {
-                "id": "wasteToday",
-                "label": {
-                  "no": "i dag",
-                  "en": "today"
-                }
-              },
-              {
-                "id": "wasteTomorrow",
-                "label": {
-                  "no": "i morgen",
-                  "en": "tomorrow"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      {
         "id": "isWaste_v2",
         "title": {
           "no": "Søppel hentes !{{|ikke}}",
@@ -2584,6 +2441,182 @@
             ]
           }
         ]
+      },
+      {
+        "id": "garbage-is-collected",
+        "title": {
+          "en": "Garbage !{{is|is not}} collected",
+          "no": "Avfall !{{hentes|hentes ikke}}"
+        },
+        "titleFormatted": {
+          "en": "Garbage collection !{{is|is not}} in [[days]] days",
+          "no": "Henting av avfall !{{er|er ikke}} om [[days]] dager"
+        },
+        "hint": {
+          "en": "Next garbage collection of at least one fraction in N days (0 means same day)",
+          "no": "Neste henting av minst en avfallstype om N dager (0 betyr samme dag)"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=renovation"
+          },
+          {
+            "type": "number",
+            "name": "days",
+            "placeholder": {
+              "en": "Number",
+              "no": "Antall"
+            },
+            "min": 0,
+            "max": 100,
+            "step": 1
+          }
+        ]
+      },
+      {
+        "id": "fraction-is-collected",
+        "title": {
+          "en": "Garbage type !{{is|is not}} collected",
+          "no": "Avfallstype !{{hentes|hentes ikke}}"
+        },
+        "titleFormatted": {
+          "en": "Next collection of [[fraction]] !{{is|is not}} in [[days]] days",
+          "no": "Neste henting av [[fraction]] !{{er|er ikke}} om [[days]] dager"
+        },
+        "hint": {
+          "en": "Next collection of garbage type in N days (0 means same day)",
+          "no": "Neste henting av avfallstype om N dager (0 betyr samme dag)"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=renovation"
+          },
+          {
+            "type": "dropdown",
+            "name": "fraction",
+            "title": {
+              "en": "Garbage type",
+              "no": "Avfallstype"
+            },
+            "values": [
+              {
+                "id": "general",
+                "label": {
+                  "en": "Residual waste",
+                  "no": "Restavfall"
+                }
+              },
+              {
+                "id": "food",
+                "label": {
+                  "en": "Food waste",
+                  "no": "Matavfall"
+                }
+              },
+              {
+                "id": "paper",
+                "label": {
+                  "en": "Paper/Cardboard",
+                  "no": "Papir/Papp"
+                }
+              },
+              {
+                "id": "plastic",
+                "label": {
+                  "en": "Plastic",
+                  "no": "Plast"
+                }
+              },
+              {
+                "id": "glass",
+                "label": {
+                  "en": "Glass/Metal",
+                  "no": "Glass/Metall"
+                }
+              },
+              {
+                "id": "hazardous",
+                "label": {
+                  "en": "Hazardous waste",
+                  "no": "Farlig avfall"
+                }
+              }
+            ]
+          },
+          {
+            "type": "number",
+            "name": "days",
+            "placeholder": {
+              "en": "Number",
+              "no": "Antall"
+            },
+            "min": 0,
+            "max": 100,
+            "step": 1
+          }
+        ]
+      },
+      {
+        "id": "ski-lifts-open-count",
+        "title": {
+          "en": "At least X lifts open",
+          "no": "Minst X heiser åpne"
+        },
+        "titleFormatted": {
+          "en": "At least [[count]] lifts !{{are|are not}} open",
+          "no": "Minst [[count]] heiser !{{er|er ikke}} åpne"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=skimore"
+          },
+          {
+            "type": "number",
+            "name": "count",
+            "placeholder": {
+              "en": "Number",
+              "no": "Antall"
+            },
+            "min": 0,
+            "max": 50,
+            "step": 1
+          }
+        ]
+      },
+      {
+        "id": "ski-slopes-open-count",
+        "title": {
+          "en": "At least X slopes open",
+          "no": "Minst X løyper åpne"
+        },
+        "titleFormatted": {
+          "en": "At least [[count]] slopes !{{are|are not}} open",
+          "no": "Minst [[count]] løyper !{{er|er ikke}} åpne"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=skimore"
+          },
+          {
+            "type": "number",
+            "name": "count",
+            "placeholder": {
+              "en": "Number",
+              "no": "Antall"
+            },
+            "min": 0,
+            "max": 50,
+            "step": 1
+          }
+        ]
       }
     ]
   },
@@ -2609,7 +2642,7 @@
       "setable": true,
       "uiComponent": "sensor",
       "uiQuickAction": false,
-      "icon": "/drivers/renovasjon/assets/icon.svg"
+      "icon": "/drivers/renovation/assets/icon.svg"
     },
     "measure_no2": {
       "type": "number",
@@ -3006,7 +3039,7 @@
       },
       "units": "dager",
       "decimals": 0,
-      "icon": "/drivers/renovasjon/assets/icon.svg",
+      "icon": "/drivers/renovation/assets/icon.svg",
       "uiComponent": "sensor",
       "getable": true,
       "setable": true,
@@ -3034,7 +3067,7 @@
       "setable": true,
       "uiComponent": "sensor",
       "uiQuickAction": false,
-      "icon": "/drivers/renovasjon/assets/icon_error.svg"
+      "icon": "/drivers/renovation/assets/icon_error.svg"
     },
     "sensor_entur_bus_dep": {
       "type": "string",
@@ -3481,7 +3514,7 @@
       "setable": true,
       "uiComponent": "sensor",
       "uiQuickAction": false,
-      "icon": "/drivers/renovasjon/assets/hage.svg"
+      "icon": "/drivers/renovation/assets/hage.svg"
     },
     "sensor_waste_general": {
       "type": "string",
@@ -3566,6 +3599,197 @@
       "uiComponent": "sensor",
       "uiQuickAction": false,
       "icon": "/drivers/water-temperature/assets/images/beach.svg"
+    },
+    "pickup_glass": {
+      "type": "string",
+      "title": {
+        "en": "Glass/Metal",
+        "no": "Glass/Metall"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": false,
+      "icon": "/drivers/renovation/assets/glass.svg"
+    },
+    "pickup_food": {
+      "type": "string",
+      "title": {
+        "en": "Food",
+        "no": "Matavfall"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": false,
+      "icon": "/drivers/renovation/assets/bio.svg"
+    },
+    "pickup_paper": {
+      "type": "string",
+      "title": {
+        "en": "Paper/Cardboard",
+        "no": "Papir/Papp"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": false,
+      "icon": "/drivers/renovation/assets/papp.svg"
+    },
+    "pickup_plastic": {
+      "type": "string",
+      "title": {
+        "en": "Plastic",
+        "no": "Plast"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": false,
+      "icon": "/drivers/renovation/assets/plast.svg"
+    },
+    "pickup_general": {
+      "type": "string",
+      "title": {
+        "en": "General waste",
+        "no": "Restavfall"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": false,
+      "icon": "/drivers/renovation/assets/rest.svg"
+    },
+    "pickup_hazardous": {
+      "type": "string",
+      "title": {
+        "en": "Hazardous waste",
+        "no": "Farlig avfall"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": false,
+      "icon": "/drivers/renovation/assets/farlig.svg"
+    },
+    "pickup_garden": {
+      "type": "string",
+      "title": {
+        "en": "Garden waste",
+        "no": "Hageavfall"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": false,
+      "icon": "/drivers/renovation/assets/hage.svg"
+    },
+    "pickup_next": {
+      "type": "string",
+      "title": {
+        "en": "Next pickup",
+        "no": "Neste henting"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": false,
+      "icon": "/drivers/renovation/assets/icon.svg"
+    },
+    "pickup_next_fractions": {
+      "type": "string",
+      "title": {
+        "en": "Next pickup types",
+        "no": "Neste henting typer"
+      },
+      "uiComponent": null,
+      "getable": true,
+      "setable": false,
+      "insights": false
+    },
+    "ski_open_lifts": {
+      "type": "string",
+      "title": {
+        "en": "Open lifts",
+        "no": "Åpne heiser"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": false,
+      "icon": "/drivers/skimore/assets/lift.svg"
+    },
+    "ski_open_slopes": {
+      "type": "string",
+      "title": {
+        "en": "Open slopes",
+        "no": "Åpne løyper"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": false,
+      "icon": "/drivers/skimore/assets/slope.svg"
+    },
+    "ski_opening_today": {
+      "type": "string",
+      "title": {
+        "en": "Open today",
+        "no": "Åpent i dag"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": false
+    },
+    "ski_opening_tomorrow": {
+      "type": "string",
+      "title": {
+        "en": "Open tomorrow",
+        "no": "Åpent i morgen"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": false
+    },
+    "ski_precipitation": {
+      "type": "number",
+      "title": {
+        "en": "Precipitation",
+        "no": "Nedbør"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "units": {
+        "en": "mm",
+        "no": "mm"
+      },
+      "decimals": 1,
+      "insights": true
+    },
+    "ski_snow_production": {
+      "type": "string",
+      "title": {
+        "en": "Snow production",
+        "no": "Snøproduksjon"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": false
+    },
+    "ski_latest_message": {
+      "type": "string",
+      "title": {
+        "en": "Latest message",
+        "no": "Siste melding"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": false
     }
   }
 }

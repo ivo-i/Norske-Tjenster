@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title data-i18n="pair.title">Konfigurasjon</title>
+</head>
+<body>
+  <h2 data-i18n="pair.enter-details">Oppgi detaljer</h2>
+  <p>
+    <label data-i18n="pair.address">Adresse:</label>
+    <input id="address" type="text" list="address-list" autocomplete="off" />
+    <datalist id="address-list"></datalist>
+    <input type="hidden" id="adressenavn" />
+    <input type="hidden" id="nummer" />
+    <input type="hidden" id="bokstav" />
+    <input type="hidden" id="adressekode" />
+    <input type="hidden" id="kommunenavn" />
+    <input type="hidden" id="kommunenummer" />
+  </p>
+  <button id="next" data-i18n="pair.next">Neste</button>
+  <script src="enter_details.js"></script>
+</body>
+</html>

@@ -28,48 +28,28 @@ class App extends Homey.App {
 
         this.wastePickupTomorrow = this.homey.flow.getDeviceTriggerCard('wastePickupTomorrow');
 
-        const isWaste = this.homey.flow.getConditionCard('isWaste');
-        isWaste.registerRunListener(async (args, state) => {
-            const wasteDaysLeft = await args.device.getCapabilityValue('measure_next_waste_days_left');
-            if (args.when === "wasteToday") {
-                if (wasteDaysLeft === 0) {
-                    return true;
-                }
-            } else if (args.when === "wasteTomorrow") {
-                if (wasteDaysLeft === 1) {
-                    return true;
-                }
-            }
-            return false;
-        });
-
+        // isWaste_v2 condition card for renovation driver
         const isWaste_v2 = this.homey.flow.getConditionCard('isWaste_v2');
         isWaste_v2.registerRunListener(async (args, state) => {
-            //const wasteDaysLeft = await args.device.getCapabilityValue('measure_next_waste_days_left');
-            const nextWastePickups = await args.device.getStoreValue(`nextWastePickups`);
-            const pickupToken = this.homey.flow.getToken(`nextWasteTypes-${args.device.deviceID}_v2`);
-
-            //this.dDebug('Checking wasteDaysLeft: ' + wasteDaysLeft);
-            this.dDebug(`Next pickups in days: ${JSON.stringify(nextWastePickups.map(pickup => pickup.diffDays))}`);
-
-            // Sjekk for henting i dag
-            if (args.when === "wasteToday") {
-                const wasteTypesString = await this.getMatchingWasteTypes(nextWastePickups, 0);
-                if (wasteTypesString !== false) {
-                    await pickupToken.setValue(wasteTypesString);
-                }
-                return nextWastePickups.some(pickup => pickup.diffDays === 0);
+            const fractions = args.device.fractionDates;
+            if (!fractions) {
+                return false;
             }
-
-            // Sjekk for henting i morgen
-            else if (args.when === "wasteTomorrow") {
-                const wasteTypesString = await this.getMatchingWasteTypes(nextWastePickups, 1);
-                if (wasteTypesString !== false) {
-                    await pickupToken.setValue(wasteTypesString);
+            
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            const targetDays = args.when === "wasteToday" ? 0 : 1;
+            
+            for (const [, fractionDate] of Object.entries(fractions)) {
+                if (!fractionDate) {
+                    continue;
                 }
-                return nextWastePickups.some(pickup => pickup.diffDays === 1);
+                const diffDays = Math.floor((fractionDate - today) / (1000 * 60 * 60 * 24));
+                if (diffDays === targetDays) {
+                    return true;
+                }
             }
-
             return false;
         });
 
@@ -162,24 +142,37 @@ class App extends Homey.App {
             return false;
         });
 
+        // isSpecificWaste condition card for renovation driver
         const isSpecificWaste = this.homey.flow.getConditionCard('isSpecificWaste');
         isSpecificWaste.registerRunListener(async (args, state) => {
-            const wasteDaysLeft = await args.device.runCalendarUpdate();
-            const groupedWasteInfo = wasteDaysLeft.groupedWasteInfo;
-            const wasteType = groupedWasteInfo.find(waste => waste.wasteType === args.type);
-            const date = wasteType.date;
-            const diffDays = new Date(date).getDate() - new Date().getDate();
-
-            if (args.when === "today") {
-                if (diffDays === 0) {
-                    return true;
-                }
-            } else if (args.when === "tomorrow") {
-                if (diffDays === 1) {
-                    return true;
-                }
+            const fractions = args.device.fractionDates;
+            if (!fractions) {
+                return false;
             }
-            return false;
+            
+            // Map args.type to fraction key (bio -> food for compatibility)
+            const typeMap = {
+                'general': 'general',
+                'paper': 'paper',
+                'plastic': 'plastic',
+                'bio': 'food',
+                'glass': 'glass',
+                'garden': 'garden'
+            };
+            
+            const fractionKey = typeMap[args.type] || args.type;
+            const fractionDate = fractions[fractionKey];
+            
+            if (!fractionDate) {
+                return false;
+            }
+            
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const diffDays = Math.floor((fractionDate - today) / (1000 * 60 * 60 * 24));
+            
+            const targetDays = args.when === "today" ? 0 : 1;
+            return diffDays === targetDays;
         });
     }
 

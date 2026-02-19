@@ -1,244 +1,219 @@
 'use strict';
 
-const { Driver } = require('homey');
 const Homey = require('homey');
-const axios = require('axios');
-const qs = require('qs');
 
-class Renovation extends Driver {
-    async onInit() {
-        this.homey.app.dDebug('Renovation v2 has been initialized', 'Renovation');
-    }
+const RemidtAdapter = require('../../lib/adapters/remidt');
+const TRVAdapter = require('../../lib/adapters/trv');
+const GLORAdapter = require('../../lib/adapters/glor');
+const IRAdapter = require('../../lib/adapters/ir');
+const MinRenovasjonAdapter = require('../../lib/adapters/minrenovasjon');
+const FosenRenovasjonAdapter = require('../../lib/adapters/fosenrenovasjon');
+const HRAAdapter = require('../../lib/adapters/hra');
+const OsloKommuneAdapter = require('../../lib/adapters/oslokommune');
+const FredrikstadKommuneAdapter = require('../../lib/adapters/fredrikstadkommune');
+const VKRAdapter = require('../../lib/adapters/vkr');
+const SIMAdapter = require('../../lib/adapters/sim');
+const NGIRAdapter = require('../../lib/adapters/ngir');
+const BIRAdapter = require('../../lib/adapters/bir');
+const HIMAdapter = require('../../lib/adapters/him');
+const HRAdapter = require('../../lib/adapters/hr');
+const IRISAdapter = require('../../lib/adapters/iris');
+const IVARAdapter = require('../../lib/adapters/ivar');
+const NOMILAdapter = require('../../lib/adapters/nomil');
+const SHMILAdapter = require('../../lib/adapters/shmil');
+const UtsiraAdapter = require('../../lib/adapters/utsira');
+const AvfallSorAdapter = require('../../lib/adapters/avfallsor');
+const SandnesKommuneAdapter = require('../../lib/adapters/sandneskommune');
+const StavangerKommuneAdapter = require('../../lib/adapters/stavangerkommune');
+const TimeKommuneAdapter = require('../../lib/adapters/timekommune');
+const SUMAdapter = require('../../lib/adapters/sum');
 
-    async onPair(session) {
-        this.addressData = {
-            "streetName": "",
-            "houseNumber": "",
-            "postCode": "",
-            "countyId": "",
-            "addressCode": "",
-            "provider": "",
-            "addressID": ""
+module.exports = class RenovasjonDriver extends Homey.Driver {
+
+  /**
+   * onInit is called when the driver is initialized.
+   */
+  async onInit() {
+    this.log('RenovasjonDriver has been initialized');
+
+    this.adapters = {
+      "remidt": new RemidtAdapter(),
+      "trv": new TRVAdapter(),
+      "glor": new GLORAdapter(),
+      "ir": new IRAdapter(),
+      "minrenovasjon": new MinRenovasjonAdapter(),
+      "fosenrenovasjon": new FosenRenovasjonAdapter(),
+      "hra": new HRAAdapter(),
+      "oslokommune": new OsloKommuneAdapter(),
+      "fredrikstadkommune": new FredrikstadKommuneAdapter(),
+      "vkr": new VKRAdapter(),
+      "sim": new SIMAdapter(),
+      "ngir": new NGIRAdapter(),
+      "bir": new BIRAdapter(),
+      "him": new HIMAdapter(),
+      "hr": new HRAdapter(),
+      "iris": new IRISAdapter(),
+      "ivar": new IVARAdapter(),
+      "nomil": new NOMILAdapter(),
+      "shmil": new SHMILAdapter(),
+      "utsira": new UtsiraAdapter(),
+      "avfallsor": new AvfallSorAdapter(),
+      "sandneskommune": new SandnesKommuneAdapter(),
+      "stavangerkommune": new StavangerKommuneAdapter(),
+      "timekommune": new TimeKommuneAdapter(),
+      "sum": new SUMAdapter(),
+    };
+
+    this.scheduleMidnightUpdate();
+
+    // Flow card registrations
+    const cardConditionGarbageIsCollected = this.homey.flow.getConditionCard('garbage-is-collected');
+    cardConditionGarbageIsCollected.registerRunListener(async (args, state) => {
+      const fractions = args.device.fractionDates;
+      if (!fractions) {
+        return false;
+      }
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      for (const [, fractionDate] of Object.entries(fractions)) {
+        if (!fractionDate) {
+          continue;
         }
-        // Show a specific view by ID
-        await session.showView("start");
-
-        session.setHandler("settingsChanged", async (data) => {
-            return await this.onSettingsChanged(data);
-        });
-
-        session.setHandler("checkAddress", async (data) => {
-            //this.homey.app.dDebug(data);
-            return await this.getApiResult(data);
-        });
-
-        session.setHandler("getCalendar", async (data) => {
-            //this.homey.app.dDebug(data);
-            return await this.getCalendar(data);
-        });
-
-        session.setHandler("getSettings", async () => {
-            //this.homey.app.dDebug("getSettings: ");
-            ///this.homey.app.dDebug(this.addressData);
-            return this.addressData;
-        });
-
-        session.setHandler("getProviders", async () => {
-            return await this.getProviders();
-        });
-
-        session.setHandler("list_devices", async () => {
-            return await this.onPairListDevices(session);
-        });
-
-        session.setHandler("useHomeyLocation", async () => {
-            return await this.useHomeyLocation();
-        });
-    }
-
-    async useHomeyLocation() {
-        let addressData = {
-            "accuracy": this.homey.geolocation.getAccuracy(),
-            "latitude": this.homey.geolocation.getLatitude(),
-            "longitude": this.homey.geolocation.getLongitude(),
+        const diffDays = Math.floor((fractionDate - today) / (1000 * 60 * 60 * 24));
+        if (diffDays === args.days) {
+          return true;
         }
-        return addressData;
+      }
+      return false;
+    });
+
+    const cardConditionGarbageTypeIsCollected = this.homey.flow.getConditionCard('fraction-is-collected');
+    cardConditionGarbageTypeIsCollected.registerRunListener(async (args, state) => {
+      const fractions = args.device.fractionDates;
+      if (!fractions) {
+        return false;
+      }
+      const fractionDate = fractions[args.fraction];
+      if (!fractionDate) {
+        return false;
+      }
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const diffDays = Math.floor((fractionDate - today) / (1000 * 60 * 60 * 24));
+      return diffDays === args.days;
+    });
+  }
+
+  async onPair(session) {
+    let addressData = null;
+    session.setHandler('save_details', async (data) => {
+      addressData = data;
+    });
+
+    session.setHandler('list_devices', async () => {
+      const provider = await this.getProviderForMunicipality(addressData.kommunenummer);
+      // If no provider found, notify user
+      if (!provider) {
+        throw new Error(this.homey.__('pair.errors.unsupported_municipality'));
+      }
+      const adapter = this.getAdapter(provider);
+
+      let addrString = addressData.adressenavn;
+      if (addressData.nummer !== '') {
+        addrString += ` ${addressData.nummer}`;
+      }
+      if (addressData.bokstav) {
+        addrString += ` ${addressData.bokstav}`;
+      }
+
+      let addressUUID;
+      try {
+        addressUUID = await adapter.fetchAddressUUID(addressData);
+        // If the address lookup failed, notify user
+        if (!addressUUID) {
+          throw new Error(this.homey.__('pair.errors.unsupported_address'));
+        }
+      }
+      catch (error) {
+        // Network errors both logged to console and notified to user
+        // NOTE: This assumes all errors are network errors, which is assuming a little too much.
+        // Consider adding error type distinctions.
+        this.error(`${adapter.getName()} could not fetch address UUID:`, error);
+        throw new Error(this.homey.__('pair.errors.network_error'));
+      }
+      const baseName = this.manifest.name[this.homey.i18n.getLanguage()] || this.manifest.name.en;
+
+      return [
+        {
+          name: `${baseName} ${addrString}`,
+          data: {
+            id: addressUUID,
+          },
+          settings: {
+            streetAddress: addrString,
+            municipality: addressData.kommunenavn,
+            provider: adapter.getName()
+          },
+          store: {
+            provider,
+            addressData,
+            addressUUID,
+          },
+        },
+      ];
+    });
+  }
+
+  async onUninit() {
+    if (this._midnightTimer) {
+      clearTimeout(this._midnightTimer);
     }
+    this.log('RenovasjonDriver has been uninitialized');
+  }
 
-    async onSettingsChanged(data) {
-        //this.homey.app.dDebug(data);
-        this.addressData = data;
-        return this.addressData;
-    }
-
-    async getProviders() {
-        let providers = [];
-        await axios.get('https://api.avfallskalender.no/v1/providers', {
-            headers: {
-                'x-api-key': Homey.env.API_KEY
-            }
-        }).then(function (response) {
-            //this.homey.app.dDebug(response.data);
-            //this.homey.app.dDebug(response.status);
-            if (response.status == 200) {
-                let providerData = response.data;
-                for (let i = 0; i < providerData.length; i++) {
-                    let provider = {
-                        provider: providerData[i],
-                    }
-                    providers.push(provider);
-                }
-            }
-        }).catch(function (error) {
-            this.homey.app.dError(JSON.stringify(error.response.data, null, 2), 'Renovation');
-        });
-        return providers;
-    }
-
-    async getApiResult(data) {
-        data = qs.stringify({
-            'streetName': data.streetName,
-            'houseNumber': data.houseNumber,
-            'postCode': data.postCode,
-            'providerName': data.providerName,
-        });
-
-        let config = {
-            method: 'post',
-            maxBodyLength: Infinity,
-            url: 'https://api.avfallskalender.no/v1/address',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'x-api-key': Homey.env.API_KEY
-            },
-            data: data
-        };
-
+  scheduleMidnightUpdate() {
+    const now = new Date();
+    // Set to five minutes past midnight
+    const millisTillMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 5, 0, 0) - now;
+    this._midnightTimer = setTimeout(async () => {
+      this.log('Midnight update triggered');
+      const devices = this.getDevices();
+      for (const device of devices) {
         try {
-            const response = await axios(config);
-            //this.homey.app.dDebug(response.data);
-            //this.homey.app.dDebug(response.status);
-            if (response.status == 200) {
-                let addressData = {
-                    "provider": "",
-                    "addressID": "",
-                    "countyId": "",
-                    "addressCode": "",
-                    "kommune": "",
-                    "addressName": ""
-                }
-
-                //addressData.streetName = response.data.adressenavn;
-                //addressData.houseNumber = response.data.nummer;
-                //addressData.postCode = response.data.postnummer;
-                addressData.countyId = response.data.kommunenummer;
-                addressData.addressCode = response.data.adressekode;
-                addressData.provider = response.data.provider;
-                addressData.addressID = response.data.id;
-                addressData.kommune = response.data.kommune;
-                addressData.addressName = `${response.data.adressenavn} ${response.data.nummer}`;
-
-                this.addressData.countyId = response.data.kommunenummer;
-                this.addressData.addressCode = response.data.adressekode;
-                this.addressData.provider = response.data.provider;
-                this.addressData.addressID = response.data.id;
-                this.addressData.kommune = response.data.kommune;
-                this.addressData.addressName = `${response.data.adressenavn} ${response.data.nummer}`;
-
-                //return { streetName: this.addressData.streetName, houseNumber: this.addressData.houseNumber, postCode: this.addressData.postCode, countyId: this.addressData.countyId, addressCode: this.addressData.addressCode, provider: this.addressData.provider, addressID: this.addressData.addressID };
-                return addressData;
-            } else {
-                return false;
-            }
+          await device.update();
+        } catch (error) {
+          this.error(`Failed to update device ${device.getName()}:`, error);
         }
-        catch (error) {
-            this.homey.app.dError(JSON.stringify(error.response.data, null, 2), 'Renovation');
-            return false;
+      }
+      this.scheduleMidnightUpdate();
+    }, millisTillMidnight);
+  }
+
+  // Return a list of available adapters with id and label for pairing UI
+  getAdaptersList() {
+    this.log('Fetching adapters list');
+    return Object.entries(this.adapters).map(([id, adapter]) => ({
+      id,
+      label: adapter.getName() || id,
+    }));
+  }
+
+  getAdapter(provider) {
+    return this.adapters[provider];
+  }
+
+  async getProviderForMunicipality(municipalityCode) {
+    for (const [id, adapter] of Object.entries(this.adapters)) {
+      try {
+        if (await adapter.coversMunicipality(municipalityCode)) {
+          return id;
         }
+      }
+      catch (error) {
+        this.error(`Could not check coverage of ${adapter.getName()}:`, error);
+      }
     }
+    return null;
+  }
 
-    async getCalendar(data) {
-        let config = {
-            method: 'get',
-            maxBodyLength: Infinity,
-            url: 'https://api.avfallskalender.no/v1/calendar/' + data.provider + '/' + data.addressID,
-            headers: {
-                'x-api-key': Homey.env.API_KEY
-            }
-        };
-
-        if (data.provider == "Min Renovasjon") {
-            config.url = 'https://api.avfallskalender.no/v1/calendar/' + data.provider + '/' + data.addressID + '/' + data.addressCode + '/' + data.countyId;
-        } else if (data.provider == "IRIS") {
-            config.url = 'https://api.avfallskalender.no/v1/calendar/' + data.provider + '/' + data.addressID + '/:streetCode/:countyID/' + data.kommune + '/' + data.addressName;
-        }
-
-        try {
-            const response = await axios(config);
-            //this.homey.app.dDebug(response.data);
-            //this.homey.app.dDebug(response.status);
-            if (response.status == 200) {
-                return response.data;
-            } else {
-                return false;
-            }
-        }
-        catch (error) {
-            this.homey.app.dError(JSON.stringify(error.response.data, null, 2), 'Renovation');
-            return false;
-        }
-    }
-
-    /**
-     * onPairListDevices is called when a user is adding a device
-     * and the 'list_devices' view is called.
-     * This should return an array with the data of devices that are available for pairing.
-     */
-    async onPairListDevices() {
-        let devices = [];
-
-        let deviceName = `Renovasjon ${this.addressData["streetName"]} ${this.addressData["houseNumber"]}`;
-        let deviceId = this.addressData["streetName"] + this.addressData["houseNumber"] + '-v2';
-
-        let settings = {};
-
-        if (this.addressData['provider'] == "Min Renovasjon") {
-            settings = {
-                address: `${this.addressData["streetName"]} ${this.addressData["houseNumber"]}`,
-                provider: `${this.addressData["provider"]}`,
-                addressID: `${this.addressData["addressID"]}`,
-                addressCode: `${this.addressData["addressCode"]}`,
-                countyId: `${this.addressData["countyId"]}`
-            }
-        } else if (this.addressData['provider'] == "IRIS") {
-            settings = {
-                address: `${this.addressData["streetName"]} ${this.addressData["houseNumber"]}`,
-                provider: `${this.addressData["provider"]}`,
-                addressID: `${this.addressData["addressID"]}`,
-                countyId: `${this.addressData["kommune"]}`
-            }
-        } else {
-            settings = {
-                address: `${this.addressData["streetName"]} ${this.addressData["houseNumber"]}`,
-                provider: `${this.addressData["provider"]}`,
-                addressID: `${this.addressData["addressID"]}`
-            }
-        }
-
-        let device = {
-            name: deviceName,
-            data: {
-                id: deviceId
-            },
-            settings: settings,
-        };
-
-        devices.push(device);
-        this.homey.app.dDebug('Renovation v2 device added', 'Renovation', device);
-        this.onSettingsChanged(settings);
-        return devices;
-    }
-
-}
-
-module.exports = Renovation;
+};

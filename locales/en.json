@@ -1,4 +1,68 @@
 {
+    "pair": {
+        "title": "Configuration",
+        "enter-details": "Enter details",
+        "address": "Address:",
+        "next": "Next",
+        "errors": {
+            "unsupported_municipality": "The municipality does not yet appear to be supported.",
+            "unsupported_address": "The municipality is supported, but the address search was unsuccessful.",
+            "network_error": "Network error. Check your connection or try again later.",
+            "address_required": "Please select an address from the list."
+        },
+        "skimore": {
+            "title": "Ski resort",
+            "select_resort": "Select resort",
+            "resort_label": "Resort:",
+            "next": "Next",
+            "errors": {
+                "no_resort": "Please select a resort.",
+                "invalid_resort": "The selected resort is not valid."
+            }
+        }
+    },
+    "fractions": {
+        "general": {
+            "short": "General",
+            "medium": "General waste",
+            "long": "General waste"
+        },
+        "food": {
+            "short": "Food",
+            "medium": "Food waste",
+            "long": "Food waste"
+        },
+        "paper": {
+            "short": "Paper",
+            "medium": "Paper/Cardboard",
+            "long": "Paper and cardboard"
+        },
+        "plastic": {
+            "short": "Plastic",
+            "medium": "Plastic",
+            "long": "Plastic packaging"
+        },
+        "glass": {
+            "short": "Glass",
+            "medium": "Glass/Metal",
+            "long": "Glass and metal packaging"
+        },
+        "hazardous": {
+            "short": "Hazardous",
+            "medium": "Hazardous waste",
+            "long": "Hazardous waste"
+        },
+        "garden": {
+            "short": "Garden",
+            "medium": "Garden waste",
+            "long": "Garden waste"
+        }
+    },
+    "grammar": {
+        "day": "day",
+        "days": "days",
+        "until": "until"
+    },
     "renovation": {
         "pair": {
             "title": "Waste collection",
