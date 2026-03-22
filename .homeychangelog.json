@@ -33,9 +33,9 @@
     "en": "SkiMore: resort status driver (lifts, slopes, weather, snowmaking, hours, driftsmeldinger, activity). Renovation: reworked to follow the open-source no.renovasjon project on GitHub (adapter layout, pickup modelling)."
   },
   "2.21.0": {
-    "en": "Reworked SkiMore driver, updated Renovation, added Grocery shop opening hours driver (Meny)."
+    "en": "SkiMore driver, updated Renovation, added Grocery shop opening hours driver (Meny)."
   },
-  "2.21.1": {
-    "en": "Fix."
+  "2.21.5": {
+    "en": "Added support for new grocery stores in the opening-hours driver."
   }
 }

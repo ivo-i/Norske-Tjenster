@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
-    "test": "node --test test/meny-parse.test.js test/skimore-venue-hours.test.js"
+    "test": "node --test test/meny-parse.test.js test/joker-grocery.test.js test/coop-grocery.test.js test/pairing-display.test.js test/rema-grocery.test.js test/skimore-venue-hours.test.js"
   },
   "devDependencies": {
     "@tsconfig/node12": "^12.1.0",

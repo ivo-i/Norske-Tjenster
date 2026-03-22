@@ -1,7 +1,7 @@
 {
   "_comment": "This file is generated. Please edit .homeycompose/app.json instead. If .homeycompose is absent in this repo, treat app.json as source of truth and merge manually when using Compose elsewhere.",
   "id": "com.Coderax.NorwegianServices",
-  "version": "2.21.1",
+  "version": "2.21.5",
   "compatibility": ">=5.0.0",
   "sdk": 3,
   "brandColor": "#e32d22",
@@ -633,20 +633,20 @@
       },
       "class": "sensor",
       "capabilities": [
-        "meny_shop_open",
-        "meny_shop_status",
-        "meny_shop_next_event"
+        "grocery_shop_open",
+        "grocery_shop_status",
+        "grocery_shop_next_event"
       ],
       "platforms": [
         "local"
       ],
       "connectivity": [],
       "images": {
-        "small": "/drivers/meny-hours/assets/images/small.png",
-        "large": "/drivers/meny-hours/assets/images/large.png",
-        "xlarge": "/drivers/meny-hours/assets/images/xlarge.png"
+        "small": "/drivers/grocery-hours/assets/images/small.png",
+        "large": "/drivers/grocery-hours/assets/images/large.png",
+        "xlarge": "/drivers/grocery-hours/assets/images/xlarge.png"
       },
-      "icon": "/drivers/meny-hours/assets/icon.svg",
+      "icon": "/drivers/grocery-hours/assets/icon.svg",
       "pair": [
         {
           "id": "search_grocery_store"
@@ -668,7 +668,7 @@
           "usageConstant": 0
         }
       },
-      "id": "meny-hours",
+      "id": "grocery-hours",
       "settings": [
         {
           "type": "group",
@@ -694,12 +694,12 @@
                 "no": "Butikk-slug"
               },
               "hint": {
-                "en": "Store path for this chain (e.g. Meny: meny-alna from meny.no/finn-butikk/…). You can paste the full URL.",
-                "no": "Butikk-slug for valgt kjede (f.eks. Meny: meny-alna fra meny.no/finn-butikk/…). Du kan lime inn hele adressen."
+                "en": "Depends on chain: Kiwi/Meny/Joker use the path slug (e.g. joker-egersund) or full URL (joker.no accepts www). Coop (Extra, Coop Mega, Prix, Coop Marked/Matkroken) uses banner/store-slug (e.g. extra/extra-stavern-4060) or a www.coop.no/butikker/… URL. REMA 1000 uses the numeric store id from pairing, or paste a rema.no butikk URL.",
+                "no": "Avhenger av kjede: Kiwi/Meny/Joker bruker slug fra adresselinjen (f.eks. joker-egersund) eller full URL (joker.no støtter www). Coop (Extra, Coop Mega, Prix, Coop Marked/Matkroken) bruker banner/butikk-slug (f.eks. extra/extra-stavern-4060) eller en www.coop.no/butikker/…-URL. REMA 1000 bruker numerisk butikk-id fra utvalget, eller lim inn en rema.no butikk-URL."
               }
             },
             {
-              "id": "meny_store_id",
+              "id": "grocery_store_numeric_id",
               "type": "label",
               "value": "",
               "label": {
@@ -1873,7 +1873,7 @@
         ]
       },
       {
-        "id": "meny_shop_opened",
+        "id": "grocery_shop_opened",
         "title": {
           "no": "Dagligvarebutikken åpnet",
           "en": "Grocery store opened"
@@ -1891,8 +1891,8 @@
               "en": "Store"
             },
             "example": {
-              "no": "MENY Alna",
-              "en": "MENY Alna"
+              "no": "KIWI 290 Hovinveien",
+              "en": "KIWI 290 Hovinveien"
             }
           },
           {
@@ -1912,12 +1912,12 @@
           {
             "type": "device",
             "name": "device",
-            "filter": "driver_id=meny-hours"
+            "filter": "driver_id=grocery-hours"
           }
         ]
       },
       {
-        "id": "meny_shop_closed",
+        "id": "grocery_shop_closed",
         "title": {
           "no": "Dagligvarebutikken stengte",
           "en": "Grocery store closed"
@@ -1935,8 +1935,8 @@
               "en": "Store"
             },
             "example": {
-              "no": "MENY Alna",
-              "en": "MENY Alna"
+              "no": "KIWI 290 Hovinveien",
+              "en": "KIWI 290 Hovinveien"
             }
           },
           {
@@ -1956,7 +1956,7 @@
           {
             "type": "device",
             "name": "device",
-            "filter": "driver_id=meny-hours"
+            "filter": "driver_id=grocery-hours"
           }
         ]
       },
@@ -4221,7 +4221,7 @@
       "insights": false,
       "icon": "/drivers/skimore/assets/activity_today.svg"
     },
-    "meny_shop_open": {
+    "grocery_shop_open": {
       "type": "boolean",
       "title": {
         "en": "Open",
@@ -4231,9 +4231,9 @@
       "getable": true,
       "setable": false,
       "insights": false,
-      "icon": "/drivers/meny-hours/assets/icon.svg"
+      "icon": "/drivers/grocery-hours/assets/icon.svg"
     },
-    "meny_shop_status": {
+    "grocery_shop_status": {
       "type": "string",
       "title": {
         "en": "Status",
@@ -4243,9 +4243,9 @@
       "getable": true,
       "setable": false,
       "insights": false,
-      "icon": "/drivers/meny-hours/assets/icon.svg"
+      "icon": "/drivers/grocery-hours/assets/icon.svg"
     },
-    "meny_shop_next_event": {
+    "grocery_shop_next_event": {
       "type": "string",
       "title": {
         "en": "Hours info",
@@ -4255,7 +4255,7 @@
       "getable": true,
       "setable": false,
       "insights": false,
-      "icon": "/drivers/meny-hours/assets/icon.svg"
+      "icon": "/drivers/grocery-hours/assets/icon.svg"
     }
   }
 }

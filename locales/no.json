@@ -24,20 +24,6 @@
 				"load_list_failed": "Kunne ikke hente anleggslisten."
 			}
 		},
-		"meny": {
-			"title": "Meny-butikk",
-			"select_store": "Velg butikk",
-			"store_label": "Butikk:",
-			"loading": "Laster…",
-			"search_placeholder": "Søk etter butikk eller slug…",
-			"search_no_results": "Ingen treff",
-			"next": "Neste",
-			"errors": {
-				"no_store": "Velg en butikk.",
-				"fetch_failed": "Kunne ikke hente butikkdata. Sjekk nettverket og prøv igjen.",
-				"load_list_failed": "Kunne ikke hente butikklisten."
-			}
-		},
 		"grocery": {
 			"brand_title": "Dagligvarekjede",
 			"brand_heading": "Velg kjede",
@@ -70,7 +56,7 @@
 			}
 		}
 	},
-	"meny": {
+	"grocery": {
 		"settings": {
 			"invalid_slug": "Ugyldig butikk-slug eller nettverksfeil. Slug er tilbakestilt."
 		},

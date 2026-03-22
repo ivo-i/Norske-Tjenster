@@ -24,20 +24,6 @@
                 "load_list_failed": "Could not load resorts."
             }
         },
-        "meny": {
-            "title": "Meny store",
-            "select_store": "Select store",
-            "store_label": "Store:",
-            "loading": "Loading…",
-            "search_placeholder": "Search store or slug…",
-            "search_no_results": "No matches",
-            "next": "Next",
-            "errors": {
-                "no_store": "Please select a store.",
-                "fetch_failed": "Could not load store data. Check the network and try again.",
-                "load_list_failed": "Could not load store list."
-            }
-        },
         "grocery": {
             "brand_title": "Grocery chain",
             "brand_heading": "Choose chain",
@@ -70,7 +56,7 @@
             }
         }
     },
-    "meny": {
+    "grocery": {
         "settings": {
             "invalid_slug": "Invalid store slug or network error. Slug was reverted."
         },
