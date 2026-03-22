@@ -2,7 +2,9 @@
   "name": "com.coderax.norwegianservices",
   "version": "1.0.0",
   "main": "app.js",
-  "scripts": {},
+  "scripts": {
+    "test": "node --test test/meny-parse.test.js test/skimore-venue-hours.test.js"
+  },
   "devDependencies": {
     "@tsconfig/node12": "^12.1.0",
     "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.4",

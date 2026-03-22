@@ -29,7 +29,16 @@ module.exports = class SkimoreDriver extends Homey.Driver {
     let resortId = null;
 
     session.setHandler('get_resorts', async () => {
-      return skimore.getResorts();
+      try {
+        const list = skimore.getResorts();
+        if (!Array.isArray(list) || list.length === 0) {
+          throw new Error('EMPTY_RESORT_LIST');
+        }
+        return list;
+      } catch (err) {
+        this.error('Skimore get_resorts failed:', err);
+        throw err;
+      }
     });
 
     session.setHandler('save_resort', async (data) => {

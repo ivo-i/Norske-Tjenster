@@ -1,7 +1,7 @@
 {
-  "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
+  "_comment": "This file is generated. Please edit .homeycompose/app.json instead. If .homeycompose is absent in this repo, treat app.json as source of truth and merge manually when using Compose elsewhere.",
   "id": "com.Coderax.NorwegianServices",
-  "version": "2.18.0",
+  "version": "2.21.1",
   "compatibility": ">=5.0.0",
   "sdk": 3,
   "brandColor": "#e32d22",
@@ -628,6 +628,115 @@
     },
     {
       "name": {
+        "en": "Grocery opening hours",
+        "no": "Dagligvare åpningstider"
+      },
+      "class": "sensor",
+      "capabilities": [
+        "meny_shop_open",
+        "meny_shop_status",
+        "meny_shop_next_event"
+      ],
+      "platforms": [
+        "local"
+      ],
+      "connectivity": [],
+      "images": {
+        "small": "/drivers/meny-hours/assets/images/small.png",
+        "large": "/drivers/meny-hours/assets/images/large.png",
+        "xlarge": "/drivers/meny-hours/assets/images/xlarge.png"
+      },
+      "icon": "/drivers/meny-hours/assets/icon.svg",
+      "pair": [
+        {
+          "id": "search_grocery_store"
+        },
+        {
+          "id": "list_devices",
+          "template": "list_devices",
+          "navigation": {
+            "next": "add_devices"
+          }
+        },
+        {
+          "id": "add_devices",
+          "template": "add_devices"
+        }
+      ],
+      "energy": {
+        "approximation": {
+          "usageConstant": 0
+        }
+      },
+      "id": "meny-hours",
+      "settings": [
+        {
+          "type": "group",
+          "label": {
+            "en": "Store",
+            "no": "Butikk"
+          },
+          "children": [
+            {
+              "id": "grocery_chain_label",
+              "type": "label",
+              "value": "",
+              "label": {
+                "en": "Chain",
+                "no": "Kjede"
+              }
+            },
+            {
+              "id": "store_slug",
+              "type": "text",
+              "label": {
+                "en": "Store slug",
+                "no": "Butikk-slug"
+              },
+              "hint": {
+                "en": "Store path for this chain (e.g. Meny: meny-alna from meny.no/finn-butikk/…). You can paste the full URL.",
+                "no": "Butikk-slug for valgt kjede (f.eks. Meny: meny-alna fra meny.no/finn-butikk/…). Du kan lime inn hele adressen."
+              }
+            },
+            {
+              "id": "meny_store_id",
+              "type": "label",
+              "value": "",
+              "label": {
+                "en": "Store id (site)",
+                "no": "Butikk-ID (nettsted)"
+              }
+            },
+            {
+              "id": "store_display_name",
+              "type": "label",
+              "value": "",
+              "label": {
+                "en": "Store name",
+                "no": "Butikknavn"
+              }
+            },
+            {
+              "id": "pollInterval",
+              "type": "number",
+              "label": {
+                "en": "Update interval",
+                "no": "Oppdateringsintervall"
+              },
+              "hint": {
+                "en": "Seconds between checks (120–3600).",
+                "no": "Sekunder mellom hver sjekk (120–3600)."
+              },
+              "value": 600,
+              "min": 120,
+              "max": 3600
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": {
         "no": "Flaggdager",
         "en": "Norwegian Flagdays"
       },
@@ -1095,8 +1204,10 @@
         "pickup_general",
         "pickup_hazardous",
         "pickup_garden",
+        "pickup_next",
         "pickup_next_fractions",
-        "pickup_next"
+        "pickup_next_date",
+        "pickup_next_days"
       ],
       "platforms": [
         "local"
@@ -1460,18 +1571,23 @@
     },
     {
       "name": {
-        "en": "Ski resort",
-        "no": "Skianlegg"
+        "en": "SkiMore",
+        "no": "SkiMore"
       },
       "class": "sensor",
       "capabilities": [
+        "ski_venue_open",
+        "ski_venue_status",
+        "ski_venue_opens_in",
+        "ski_venue_closes_in",
+        "ski_opening_today",
+        "ski_opening_tomorrow",
+        "ski_open_lifts",
+        "ski_open_slopes",
+        "ski_activity_today",
         "measure_temperature",
         "measure_humidity",
         "ski_precipitation",
-        "ski_open_lifts",
-        "ski_open_slopes",
-        "ski_opening_today",
-        "ski_opening_tomorrow",
         "ski_snow_production",
         "ski_latest_message"
       ],
@@ -1753,6 +1869,182 @@
             "type": "device",
             "name": "device",
             "filter": "driver_id=lightning-alert"
+          }
+        ]
+      },
+      {
+        "id": "meny_shop_opened",
+        "title": {
+          "no": "Dagligvarebutikken åpnet",
+          "en": "Grocery store opened"
+        },
+        "hint": {
+          "no": "Når butikken går fra stengt til åpen.",
+          "en": "When the store goes from closed to open."
+        },
+        "tokens": [
+          {
+            "name": "store_name",
+            "type": "string",
+            "title": {
+              "no": "Butikk",
+              "en": "Store"
+            },
+            "example": {
+              "no": "MENY Alna",
+              "en": "MENY Alna"
+            }
+          },
+          {
+            "name": "detail",
+            "type": "string",
+            "title": {
+              "no": "Detalj",
+              "en": "Detail"
+            },
+            "example": {
+              "no": "Stenger kl. 21:00",
+              "en": "Closes at 21:00"
+            }
+          }
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=meny-hours"
+          }
+        ]
+      },
+      {
+        "id": "meny_shop_closed",
+        "title": {
+          "no": "Dagligvarebutikken stengte",
+          "en": "Grocery store closed"
+        },
+        "hint": {
+          "no": "Når butikken går fra åpen til stengt.",
+          "en": "When the store goes from open to closed."
+        },
+        "tokens": [
+          {
+            "name": "store_name",
+            "type": "string",
+            "title": {
+              "no": "Butikk",
+              "en": "Store"
+            },
+            "example": {
+              "no": "MENY Alna",
+              "en": "MENY Alna"
+            }
+          },
+          {
+            "name": "detail",
+            "type": "string",
+            "title": {
+              "no": "Detalj",
+              "en": "Detail"
+            },
+            "example": {
+              "no": "Neste åpning: i morgen kl. 09:00",
+              "en": "Next opening: tomorrow at 09:00"
+            }
+          }
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=meny-hours"
+          }
+        ]
+      },
+      {
+        "id": "ski_venue_opened",
+        "title": {
+          "no": "SkiMore-anlegget åpnet (etter åpningstider)",
+          "en": "SkiMore area opened (by opening hours)"
+        },
+        "hint": {
+          "no": "Når SkiMore-anlegget går fra stengt til åpent ifølge oppgitte åpningstider.",
+          "en": "When the SkiMore area goes from closed to open based on published hours."
+        },
+        "tokens": [
+          {
+            "name": "resort_name",
+            "type": "string",
+            "title": {
+              "no": "Anlegg",
+              "en": "Resort"
+            },
+            "example": {
+              "no": "SkiMore Oslo",
+              "en": "SkiMore Oslo"
+            }
+          },
+          {
+            "name": "detail",
+            "type": "string",
+            "title": {
+              "no": "Detalj",
+              "en": "Detail"
+            },
+            "example": {
+              "no": "Stenger kl. 22:00",
+              "en": "Closes at 22:00"
+            }
+          }
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=skimore"
+          }
+        ]
+      },
+      {
+        "id": "ski_venue_closed",
+        "title": {
+          "no": "SkiMore-anlegget stengte (etter åpningstider)",
+          "en": "SkiMore area closed (by opening hours)"
+        },
+        "hint": {
+          "no": "Når SkiMore-anlegget går fra åpent til stengt ifølge oppgitte åpningstider.",
+          "en": "When the SkiMore area goes from open to closed based on published hours."
+        },
+        "tokens": [
+          {
+            "name": "resort_name",
+            "type": "string",
+            "title": {
+              "no": "Anlegg",
+              "en": "Resort"
+            },
+            "example": {
+              "no": "SkiMore Oslo",
+              "en": "SkiMore Oslo"
+            }
+          },
+          {
+            "name": "detail",
+            "type": "string",
+            "title": {
+              "no": "Detalj",
+              "en": "Detail"
+            },
+            "example": {
+              "no": "Neste åpning: i morgen kl. 10:00",
+              "en": "Next opening: tomorrow at 10:00"
+            }
+          }
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=skimore"
           }
         ]
       },
@@ -2436,6 +2728,44 @@
                 "label": {
                   "no": "i morgen",
                   "en": "tomorrow"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "ski_venue_is_open",
+        "title": {
+          "no": "SkiMore-anlegget er !{{|ikke}} åpent",
+          "en": "SkiMore area is !{{|not}} open"
+        },
+        "titleFormatted": {
+          "no": "SkiMore-anlegget er !{{|ikke}} [[state]] (etter åpningstider)",
+          "en": "SkiMore area is !{{|not}} [[state]] (by hours)"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=skimore"
+          },
+          {
+            "type": "dropdown",
+            "name": "state",
+            "values": [
+              {
+                "id": "open",
+                "label": {
+                  "no": "åpent",
+                  "en": "open"
+                }
+              },
+              {
+                "id": "closed",
+                "label": {
+                  "no": "stengt",
+                  "en": "closed"
                 }
               }
             ]
@@ -3707,6 +4037,28 @@
       "setable": false,
       "insights": false
     },
+    "pickup_next_date": {
+      "type": "string",
+      "title": {
+        "en": "Next pickup date",
+        "no": "Neste henting dato"
+      },
+      "uiComponent": null,
+      "getable": true,
+      "setable": false,
+      "insights": false
+    },
+    "pickup_next_days": {
+      "type": "number",
+      "title": {
+        "en": "Next pickup days",
+        "no": "Neste henting dager"
+      },
+      "uiComponent": null,
+      "getable": true,
+      "setable": false,
+      "insights": false
+    },
     "ski_open_lifts": {
       "type": "string",
       "title": {
@@ -3740,7 +4092,8 @@
       "uiComponent": "sensor",
       "getable": true,
       "setable": false,
-      "insights": false
+      "insights": false,
+      "icon": "/drivers/skimore/assets/opening_today.svg"
     },
     "ski_opening_tomorrow": {
       "type": "string",
@@ -3751,7 +4104,64 @@
       "uiComponent": "sensor",
       "getable": true,
       "setable": false,
-      "insights": false
+      "insights": false,
+      "icon": "/drivers/skimore/assets/opening_tomorrow.svg"
+    },
+    "ski_venue_open": {
+      "type": "boolean",
+      "title": {
+        "en": "Area open (hours)",
+        "no": "Anlegg åpent (tid)"
+      },
+      "uiComponent": null,
+      "getable": true,
+      "setable": false,
+      "insights": false,
+      "icon": "/drivers/skimore/assets/venue_open.svg"
+    },
+    "ski_venue_status": {
+      "type": "string",
+      "title": {
+        "en": "Opening status",
+        "no": "Åpningsstatus"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": false,
+      "icon": "/drivers/skimore/assets/venue_status.svg"
+    },
+    "ski_venue_opens_in": {
+      "type": "string",
+      "title": {
+        "en": "Opens in",
+        "no": "Åpner om"
+      },
+      "units": {
+        "en": "min",
+        "no": "min"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": false,
+      "icon": "/drivers/skimore/assets/clock_opens.svg"
+    },
+    "ski_venue_closes_in": {
+      "type": "string",
+      "title": {
+        "en": "Closes in",
+        "no": "Stenger om"
+      },
+      "units": {
+        "en": "min",
+        "no": "min"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": false,
+      "icon": "/drivers/skimore/assets/clock_closes.svg"
     },
     "ski_precipitation": {
       "type": "number",
@@ -3767,10 +4177,11 @@
         "no": "mm"
       },
       "decimals": 1,
-      "insights": true
+      "insights": true,
+      "icon": "/drivers/skimore/assets/precipitation.svg"
     },
     "ski_snow_production": {
-      "type": "string",
+      "type": "number",
       "title": {
         "en": "Snow production",
         "no": "Snøproduksjon"
@@ -3778,18 +4189,73 @@
       "uiComponent": "sensor",
       "getable": true,
       "setable": false,
-      "insights": false
+      "decimals": 0,
+      "units": {
+        "en": "%",
+        "no": "%"
+      },
+      "insights": true,
+      "icon": "/drivers/skimore/assets/snow_production.svg"
     },
     "ski_latest_message": {
       "type": "string",
       "title": {
-        "en": "Latest message",
-        "no": "Siste melding"
+        "en": "Latest operational message",
+        "no": "Siste driftsmelding"
       },
       "uiComponent": "sensor",
       "getable": true,
       "setable": false,
-      "insights": false
+      "insights": false,
+      "icon": "/drivers/skimore/assets/drift_message.svg"
+    },
+    "ski_activity_today": {
+      "type": "string",
+      "title": {
+        "en": "Activity calendar (today)",
+        "no": "Aktivitetskalender (i dag)"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": false,
+      "icon": "/drivers/skimore/assets/activity_today.svg"
+    },
+    "meny_shop_open": {
+      "type": "boolean",
+      "title": {
+        "en": "Open",
+        "no": "Åpen"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": false,
+      "icon": "/drivers/meny-hours/assets/icon.svg"
+    },
+    "meny_shop_status": {
+      "type": "string",
+      "title": {
+        "en": "Status",
+        "no": "Status"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": false,
+      "icon": "/drivers/meny-hours/assets/icon.svg"
+    },
+    "meny_shop_next_event": {
+      "type": "string",
+      "title": {
+        "en": "Hours info",
+        "no": "Åpningstider"
+      },
+      "uiComponent": "sensor",
+      "getable": true,
+      "setable": false,
+      "insights": false,
+      "icon": "/drivers/meny-hours/assets/icon.svg"
     }
   }
 }

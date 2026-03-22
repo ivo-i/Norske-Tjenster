@@ -174,6 +174,19 @@ class App extends Homey.App {
             const targetDays = args.when === "today" ? 0 : 1;
             return diffDays === targetDays;
         });
+
+        const skiVenueIsOpen = this.homey.flow.getConditionCard('ski_venue_is_open');
+        skiVenueIsOpen.registerRunListener(async (args) => {
+            const open = await args.device.getCapabilityValue('ski_venue_open');
+            const isOpen = Boolean(open);
+            if (args.state === 'open') {
+                return isOpen;
+            }
+            if (args.state === 'closed') {
+                return !isOpen;
+            }
+            return false;
+        });
     }
 
     async formatWastePickupText(wasteType) {

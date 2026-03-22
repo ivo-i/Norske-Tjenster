@@ -11,14 +11,73 @@
             "address_required": "Please select an address from the list."
         },
         "skimore": {
-            "title": "Ski resort",
+            "title": "SkiMore",
             "select_resort": "Select resort",
             "resort_label": "Resort:",
+            "loading": "Loading…",
+            "search_placeholder": "Search resort or id…",
+            "search_no_results": "No matches",
             "next": "Next",
             "errors": {
                 "no_resort": "Please select a resort.",
-                "invalid_resort": "The selected resort is not valid."
+                "invalid_resort": "The selected resort is not valid.",
+                "load_list_failed": "Could not load resorts."
             }
+        },
+        "meny": {
+            "title": "Meny store",
+            "select_store": "Select store",
+            "store_label": "Store:",
+            "loading": "Loading…",
+            "search_placeholder": "Search store or slug…",
+            "search_no_results": "No matches",
+            "next": "Next",
+            "errors": {
+                "no_store": "Please select a store.",
+                "fetch_failed": "Could not load store data. Check the network and try again.",
+                "load_list_failed": "Could not load store list."
+            }
+        },
+        "grocery": {
+            "brand_title": "Grocery chain",
+            "brand_heading": "Choose chain",
+            "brand_hint": "Pick the store brand first, then search by store name or address in the next step.",
+            "brand_label": "Brand:",
+            "store_title": "Choose store",
+            "select_store_heading": "Select store",
+            "store_label": "Store:",
+            "store_filter_label": "Search:",
+            "loading": "Loading…",
+            "search_placeholder": "Search store name, place or slug…",
+            "search_no_results": "No matches",
+            "pair_title": "Grocery store",
+            "pair_heading": "Find your store",
+            "pair_hint": "Search by name, place or store code, tap a row to select it, then continue.",
+            "search_label": "Search",
+            "browse_more_hint": "Showing the first stores — type to find yours.",
+            "refine_search_hint": "Many matches — add another word to narrow the list.",
+            "results_aria": "Store results",
+            "next": "Next",
+            "errors": {
+                "no_brand": "Please select a chain.",
+                "no_store": "Please select a store.",
+                "fetch_failed": "Could not load store data. Check the network and try again.",
+                "load_list_failed": "Could not load store list.",
+                "load_chains_failed": "Could not load chains.",
+                "no_brand_first": "Go back and choose a chain first (previous step).",
+                "empty_store_list": "No stores could be loaded.",
+                "unknown_chain": "This store type is not available in the app."
+            }
+        }
+    },
+    "meny": {
+        "settings": {
+            "invalid_slug": "Invalid store slug or network error. Slug was reverted."
+        },
+        "device": {
+            "unavailable": "Could not update store opening hours. Check the network or store slug.",
+            "invalid_chain": "Unknown grocery chain. Re-pair the device or contact support.",
+            "missing_slug": "Store slug is missing. Set a valid slug in device settings."
         }
     },
     "fractions": {

@@ -11,14 +11,73 @@
 			"address_required": "Vennligst velg en adresse fra listen."
 		},
 		"skimore": {
-			"title": "Skianlegg",
+			"title": "SkiMore",
 			"select_resort": "Velg anlegg",
 			"resort_label": "Anlegg:",
+			"loading": "Laster…",
+			"search_placeholder": "Søk etter anlegg eller id…",
+			"search_no_results": "Ingen treff",
 			"next": "Neste",
 			"errors": {
 				"no_resort": "Vennligst velg et anlegg.",
-				"invalid_resort": "Det valgte anlegget er ugyldig."
+				"invalid_resort": "Det valgte anlegget er ugyldig.",
+				"load_list_failed": "Kunne ikke hente anleggslisten."
 			}
+		},
+		"meny": {
+			"title": "Meny-butikk",
+			"select_store": "Velg butikk",
+			"store_label": "Butikk:",
+			"loading": "Laster…",
+			"search_placeholder": "Søk etter butikk eller slug…",
+			"search_no_results": "Ingen treff",
+			"next": "Neste",
+			"errors": {
+				"no_store": "Velg en butikk.",
+				"fetch_failed": "Kunne ikke hente butikkdata. Sjekk nettverket og prøv igjen.",
+				"load_list_failed": "Kunne ikke hente butikklisten."
+			}
+		},
+		"grocery": {
+			"brand_title": "Dagligvarekjede",
+			"brand_heading": "Velg kjede",
+			"brand_hint": "Velg butikkmerke først. Deretter søker du etter butikknavn eller sted.",
+			"brand_label": "Kjede:",
+			"store_title": "Velg butikk",
+			"select_store_heading": "Velg butikk",
+			"store_label": "Butikk:",
+			"store_filter_label": "Søk:",
+			"loading": "Laster…",
+			"search_placeholder": "Søk butikknavn, sted eller slug…",
+			"search_no_results": "Ingen treff",
+			"pair_title": "Dagligvarebutikk",
+			"pair_heading": "Finn butikken din",
+			"pair_hint": "Søk på navn, sted eller kode, trykk på en rad for å velge, deretter fortsett.",
+			"search_label": "Søk",
+			"browse_more_hint": "Viser de første butikkene — skriv for å finne din.",
+			"refine_search_hint": "Mange treff — skriv mer for å snevre inn.",
+			"results_aria": "Butikkresultater",
+			"next": "Neste",
+			"errors": {
+				"no_brand": "Velg en kjede.",
+				"no_store": "Velg en butikk.",
+				"fetch_failed": "Kunne ikke hente butikkdata. Sjekk nettverket og prøv igjen.",
+				"load_list_failed": "Kunne ikke hente butikklisten.",
+				"load_chains_failed": "Kunne ikke hente kjedelisten.",
+				"no_brand_first": "Gå tilbake og velg kjede først (forrige steg).",
+				"empty_store_list": "Ingen butikker kunne lastes.",
+				"unknown_chain": "Denne butikktypen støttes ikke i appen."
+			}
+		}
+	},
+	"meny": {
+		"settings": {
+			"invalid_slug": "Ugyldig butikk-slug eller nettverksfeil. Slug er tilbakestilt."
+		},
+		"device": {
+			"unavailable": "Kunne ikke oppdatere butikkens åpningstider. Sjekk nettverk eller slug.",
+			"invalid_chain": "Ukjent dagligvarekjede. Par enheten på nytt eller kontakt support.",
+			"missing_slug": "Butikk-slug mangler. Angi en gyldig slug i enhetsinnstillinger."
 		}
 	},
 	"fractions": {

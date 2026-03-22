@@ -1,3 +1,5 @@
 .homeybuild
 .DS_Store
 env.json
+test/*
+drivers/.DS_Store

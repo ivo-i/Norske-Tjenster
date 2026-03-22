@@ -2,9 +2,18 @@
 
 const Homey = require('homey');
 const skimore = require('../../lib/skimore');
+const { computeVenueOpenStatus, findTodayEntry } = require('../../lib/skimore-venue-hours');
 
 const DAY_NAMES_TODAY = ['i dag', 'today'];
 const DAY_NAMES_TOMORROW = ['i morgen', 'tomorrow'];
+
+const VENUE_CAPS = [
+  'ski_venue_open',
+  'ski_venue_status',
+  'ski_venue_opens_in',
+  'ski_venue_closes_in',
+];
+const MESSAGE_CAPS = ['ski_activity_today'];
 
 function matchesDay(dayText, candidates) {
   const lower = (dayText || '').toLowerCase();
@@ -18,6 +27,11 @@ module.exports = class SkimoreDevice extends Homey.Device {
     this.resortId = this.getStoreValue('resortId');
     this._updating = false;
     this._consecutiveErrors = 0;
+    this._lastVenueOpen = null;
+    this._suppressVenueTriggers = true;
+
+    this._venueOpenedTrigger = this.homey.flow.getDeviceTriggerCard('ski_venue_opened');
+    this._venueClosedTrigger = this.homey.flow.getDeviceTriggerCard('ski_venue_closed');
 
     if (!this.resortId) {
       this.error('No resortId stored for this device');
@@ -25,8 +39,33 @@ module.exports = class SkimoreDevice extends Homey.Device {
       return;
     }
 
+    await this.ensureVenueCapabilities();
+    await this.ensureMessageCapabilities();
+
     const stagger = Math.floor(Math.random() * 5000);
     this.homey.setTimeout(() => this.update(), stagger);
+  }
+
+  async ensureVenueCapabilities() {
+    if (this.hasCapability('ski_venue_hours_detail')) {
+      await this.removeCapability('ski_venue_hours_detail');
+    }
+    for (const cap of VENUE_CAPS) {
+      if (!this.hasCapability(cap)) {
+        await this.addCapability(cap);
+      }
+    }
+  }
+
+  async ensureMessageCapabilities() {
+    if (this.hasCapability('ski_latest_message_title')) {
+      await this.removeCapability('ski_latest_message_title');
+    }
+    for (const cap of MESSAGE_CAPS) {
+      if (!this.hasCapability(cap)) {
+        await this.addCapability(cap);
+      }
+    }
   }
 
   async onAdded() {
@@ -47,6 +86,8 @@ module.exports = class SkimoreDevice extends Homey.Device {
       return;
     }
     this._updating = true;
+
+    const prevVenueOpen = this._lastVenueOpen;
 
     this.log('Updating data for SkimoreDevice');
 
@@ -72,13 +113,55 @@ module.exports = class SkimoreDevice extends Homey.Device {
       this._consecutiveErrors = 0;
       await this.setAvailable();
       await this.updateCapabilities(data);
+
+      const lang = this.homey.i18n.getLanguage() === 'no' ? 'no' : 'en';
+      const venue = computeVenueOpenStatus(data.openingHours || [], lang);
+      const resortName =
+        this.getSetting('resort_name')
+        || (skimore.RESORTS[this.resortId] && skimore.RESORTS[this.resortId].name)
+        || this.resortId;
+
+      const todayHoursEntry = findTodayEntry(data.openingHours || []);
+      const venueFlowDetail = todayHoursEntry
+        ? todayHoursEntry.hours
+        : venue.detailText || venue.statusText;
+
+      await this.safeSetCapability('ski_venue_open', venue.open);
+      await this.safeSetCapability('ski_venue_status', venue.statusText);
+      await this.safeSetCapability('ski_venue_opens_in', venue.opensInText);
+      await this.safeSetCapability('ski_venue_closes_in', venue.closesInText);
+
+      if (this._suppressVenueTriggers) {
+        this._lastVenueOpen = venue.open;
+        this._suppressVenueTriggers = false;
+      } else if (prevVenueOpen !== null && prevVenueOpen !== venue.open) {
+        if (venue.open) {
+          await this._venueOpenedTrigger
+            .trigger(this, {
+              resort_name: resortName,
+              detail: venueFlowDetail,
+            }, {})
+            .catch((err) => this.error('ski_venue_opened trigger:', err));
+        } else {
+          await this._venueClosedTrigger
+            .trigger(this, {
+              resort_name: resortName,
+              detail: venueFlowDetail,
+            }, {})
+            .catch((err) => this.error('ski_venue_closed trigger:', err));
+        }
+        this._lastVenueOpen = venue.open;
+      } else {
+        this._lastVenueOpen = venue.open;
+      }
+
       await this.setStoreValue('openLifts', data.lifts.open);
       await this.setStoreValue('openSlopes', data.slopes.open);
     } catch (error) {
-      this.error('Failed to fetch Skimore data:', error);
+      this.error('Failed to fetch SkiMore data:', error);
       this._consecutiveErrors++;
       if (this._consecutiveErrors >= 3) {
-        await this.setUnavailable('Unable to reach Skimore');
+        await this.setUnavailable('Unable to reach SkiMore');
       }
     } finally {
       this._updating = false;
@@ -104,14 +187,21 @@ module.exports = class SkimoreDevice extends Homey.Device {
     await this.safeSetCapability('ski_opening_today', todayEntry ? todayEntry.hours : '-');
     await this.safeSetCapability('ski_opening_tomorrow', tomorrowEntry ? tomorrowEntry.hours : '-');
 
-    await this.safeSetCapability('ski_snow_production', data.snowProductionStatus || '-');
-
-    if (data.messages.length > 0) {
-      const msg = data.messages[0];
-      await this.safeSetCapability('ski_latest_message', `${msg.date}: ${msg.title}`);
-    } else {
-      await this.safeSetCapability('ski_latest_message', '-');
+    if (data.snowProductionPercent != null) {
+      await this.safeSetSnowProductionPercent(data.snowProductionPercent);
     }
+
+    const lang = this.homey.i18n.getLanguage() === 'no' ? 'no' : 'en';
+
+    await this.safeSetCapability(
+      'ski_latest_message',
+      data.messages.length > 0 ? skimore.formatLatestDriftsmelding(data.messages[0]) : '-',
+    );
+
+    await this.safeSetCapability(
+      'ski_activity_today',
+      skimore.formatActivityToday(data.calendarActivities, lang),
+    );
   }
 
   async safeSetCapability(cap, value) {
@@ -121,6 +211,28 @@ module.exports = class SkimoreDevice extends Homey.Device {
       }
     } catch (error) {
       this.error(`Failed to set capability ${cap}:`, error);
+    }
+  }
+
+  /**
+   * ski_snow_production was previously a string; migrate to number % if setCapabilityValue fails.
+   */
+  async safeSetSnowProductionPercent(value) {
+    const cap = 'ski_snow_production';
+    try {
+      if (this.hasCapability(cap)) {
+        await this.setCapabilityValue(cap, value);
+      }
+    } catch (error) {
+      try {
+        if (this.hasCapability(cap)) {
+          await this.removeCapability(cap);
+        }
+        await this.addCapability(cap);
+        await this.setCapabilityValue(cap, value);
+      } catch (e2) {
+        this.error(`Failed to set ${cap}:`, e2);
+      }
     }
   }
 
