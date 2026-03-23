@@ -1,8 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <path d="M2 8.5L12 4l10 4.5V10H2V8.5z" stroke="#000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M3.5 10v11h17V10" stroke="#000" stroke-width="1.5" stroke-linejoin="round"/>
-  <path d="M9.5 14.5h5V21h-5v-6.5z" stroke="#000" stroke-width="1.5" stroke-linejoin="round"/>
-  <path d="M6 12.5h2.5M6 14h2.5" stroke="#000" stroke-width="1.35" stroke-linecap="round"/>
-  <path d="M15.5 12.5H18M15.5 14H18" stroke="#000" stroke-width="1.35" stroke-linecap="round"/>
+<svg viewBox="0 0 150 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="150" height="100" rx="12" fill="#f4f4f5"/>
+  <!-- Coop -->
+  <rect x="4" y="4" width="44" height="30" rx="5" fill="#1a1a1a"/>
+  <text x="26" y="24" text-anchor="middle" fill="#fff" font-family="system-ui, -apple-system, Segoe UI, sans-serif" font-size="11" font-weight="800">Coop</text>
+  <!-- REMA 1000 (blue per product owner) -->
+  <rect x="52" y="4" width="44" height="30" rx="5" fill="#005eb8"/>
+  <text x="74" y="17" text-anchor="middle" fill="#fff" font-family="system-ui, -apple-system, Segoe UI, sans-serif" font-size="8" font-weight="800">REMA</text>
+  <text x="74" y="27" text-anchor="middle" fill="#fff" font-family="system-ui, -apple-system, Segoe UI, sans-serif" font-size="8" font-weight="800">1000</text>
+  <!-- Kiwi -->
+  <rect x="100" y="4" width="46" height="30" rx="5" fill="#00a651"/>
+  <text x="123" y="24" text-anchor="middle" fill="#fff" font-family="system-ui, -apple-system, Segoe UI, sans-serif" font-size="10" font-weight="800">Kiwi</text>
+  <!-- Joker -->
+  <rect x="4" y="38" width="70" height="58" rx="5" fill="#f39200"/>
+  <text x="39" y="76" text-anchor="middle" fill="#fff" font-family="system-ui, -apple-system, Segoe UI, sans-serif" font-size="16" font-weight="800">Joker</text>
+  <!-- Meny -->
+  <rect x="76" y="38" width="70" height="58" rx="5" fill="#d32020"/>
+  <text x="111" y="76" text-anchor="middle" fill="#fff" font-family="system-ui, -apple-system, Segoe UI, sans-serif" font-size="17" font-weight="800">Meny</text>
 </svg>
