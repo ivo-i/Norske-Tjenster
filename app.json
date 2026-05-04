@@ -1,7 +1,7 @@
 {
   "_comment": "This file is generated. Please edit .homeycompose/app.json instead. If .homeycompose is absent in this repo, treat app.json as source of truth and merge manually when using Compose elsewhere.",
   "id": "com.Coderax.NorwegianServices",
-  "version": "2.21.5",
+  "version": "2.21.6",
   "compatibility": ">=5.0.0",
   "sdk": 3,
   "brandColor": "#e32d22",

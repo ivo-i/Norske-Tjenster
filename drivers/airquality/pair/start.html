@@ -24,7 +24,8 @@
 
 			$.ajax({
 				url: 'https://api.met.no/weatherapi/airqualityforecast/0.1/stations',
-				dataType: 'json'
+				dataType: 'json',
+				headers: { 'X-User-Agent': 'Homey-NorskeTjenester (pair) +https://github.com/Coderaxx/NorwegianServicesPublic' }
 			}).done(async function(data) {
 				heleDatasettet = data;
 				await initialiserSelect2();

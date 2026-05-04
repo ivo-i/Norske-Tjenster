@@ -2,6 +2,7 @@
 
 const { Device } = require('homey');
 const axios = require('axios');
+const { MET_USER_AGENT } = require('../../lib/util');
 
 class AirQualityIndex extends Device {
     async onInit() {
@@ -48,9 +49,20 @@ class AirQualityIndex extends Device {
     }
 
     async fetchAQI() {
+        const metHeaders = {
+            'User-Agent': MET_USER_AGENT,
+            Accept: 'application/json',
+        };
+        const metOpts = { headers: metHeaders, timeout: 15000 };
         try {
-            const aqiResponse = await axios.get(`https://api.met.no/weatherapi/airqualityforecast/0.1/?station=${this.settings.stationId}`);
-            const tempResponse = await axios.get(`https://api.met.no/weatherapi/airqualityforecast/0.1/met?station=${this.settings.stationId}`);
+            const aqiResponse = await axios.get(
+                `https://api.met.no/weatherapi/airqualityforecast/0.1/?station=${this.settings.stationId}`,
+                metOpts,
+            );
+            const tempResponse = await axios.get(
+                `https://api.met.no/weatherapi/airqualityforecast/0.1/met?station=${this.settings.stationId}`,
+                metOpts,
+            );
             const responseModel = {
                 aqi: {
                     ...aqiResponse.data.data,
@@ -62,6 +74,13 @@ class AirQualityIndex extends Device {
 
             return responseModel;
         } catch (error) {
+            if (error && error.response && error.response.status === 403) {
+                this.homey.app.dError(
+                    'met.no returned 403 (forbidden). Usually missing/invalid User-Agent — check app update.',
+                    'Air Quality Index',
+                    { status: 403, stationId: this.settings.stationId },
+                );
+            }
             this.homey.app.dError('An error occurred while fetching AQI data', 'Air Quality Index', error);
             return false;
         }
