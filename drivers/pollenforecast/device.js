@@ -36,9 +36,12 @@ class PollenForecast extends Device {
         if (!this.settings.region || this.settings.region === null || this.settings.region === undefined || this.settings.region === "" || this.settings.region === "null") {
             this.homey.app.dDebug('Region is not set, fetching region', 'PollenForecast');
             const region = await this.getRegion(null, { lat: this.device.lat, lng: this.device.lng });
-            await this.setSettings({ region: region?.region?.name?.toLowerCase() });
-            this.settings = this.getSettings();
-            this.homey.app.dDebug('Region set to ' + region?.region?.name, 'PollenForecast');
+            const county = this.normalizeCountyForSettings(region?.county);
+            if (county) {
+                await this.setSettings({ region: county });
+                this.settings = this.getSettings();
+                this.homey.app.dDebug('Region set to ' + county, 'PollenForecast');
+            }
         }
 
         this.homey.app.dInfo('PollenForecast has been initialized', 'PollenForecast');
@@ -359,6 +362,29 @@ class PollenForecast extends Device {
         this.homey.app.dInfo('PollenForecast has been deleted', 'PollenForecast');
     }
 
+    normalizeCountyForSettings(county) {
+        if (!county) return null;
+
+        const countyLower = county.toLowerCase();
+        const validCounties = new Set([
+            'akershus', 'agder', 'buskerud', 'finnmark', 'innlandet',
+            'møre og romsdal', 'nordland', 'oslo', 'rogaland', 'telemark',
+            'troms', 'trøndelag', 'vestfold', 'vestland', 'østfold',
+        ]);
+
+        if (validCounties.has(countyLower)) {
+            return countyLower;
+        }
+
+        const countyAliasMap = {
+            'viken': 'akershus',
+            'vestfold og telemark': 'vestfold',
+            'troms og finnmark': 'troms',
+        };
+
+        return countyAliasMap[countyLower] || 'oslo';
+    }
+
     async getRegion(county = null, { lat, lng } = {}) {
         this.homey.app.dDebug(`Getting region for ${county ? county : lat + ',' + lng}`, 'PollenForecast');
         const availableRegions = [
@@ -422,7 +448,7 @@ class PollenForecast extends Device {
             const data = response.data;
             const county = data?.fylkesnavn?.toLowerCase();
 
-            const regionId = countyToRegionMap[county.toLowerCase()] || 'oslo';
+            const regionId = countyToRegionMap[county.toLowerCase()] || 'ostlandetmedoslo';
             const region = availableRegions.find(r => r.id === regionId);
 
             this.homey.app.dDebug(`Region found: ${region?.name}`, 'PollenForecast');
