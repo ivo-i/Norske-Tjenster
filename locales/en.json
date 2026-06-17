@@ -198,8 +198,21 @@
     "waterTemperature": {
         "pair": {
             "title": "Water temperature",
-            "desc": "Enter location in the field below",
-            "label": "Search for location"
+            "desc": "Select county and bathing spot below",
+            "label": "Select bathing spot",
+            "region": "Select county",
+            "selectRegion": "Select county...",
+            "selectSpot": "Select a bathing spot...",
+            "changeRegion": "Choose another county",
+            "loadingSpots": "Loading bathing spots...",
+            "noSpots": "No bathing spots found",
+            "regionsFailed": "Could not load counties",
+            "spotsFailed": "Could not load bathing spots"
+        },
+        "errors": {
+            "noSpot": "No bathing spot configured",
+            "noData": "No water temperature available",
+            "fetchFailed": "Could not fetch water temperature"
         }
     },
     "airQuality": {

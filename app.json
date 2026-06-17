@@ -1,7 +1,7 @@
 {
   "_comment": "This file is generated. Please edit .homeycompose/app.json instead. If .homeycompose is absent in this repo, treat app.json as source of truth and merge manually when using Compose elsewhere.",
   "id": "com.Coderax.NorwegianServices",
-  "version": "2.21.7",
+  "version": "2.21.8",
   "compatibility": ">=5.0.0",
   "sdk": 3,
   "brandColor": "#e32d22",
@@ -1547,6 +1547,11 @@
           "template": "add_devices"
         }
       ],
+      "repair": [
+        {
+          "id": "start"
+        }
+      ],
       "energy": {
         "approximation": {
           "usageConstant": 0
@@ -1555,17 +1560,22 @@
       "id": "water-temperature",
       "settings": [
         {
-          "id": "bathingspot",
+          "id": "spotName",
           "type": "label",
           "label": {
-            "no": "Badeplassens ID",
+            "no": "Badeplass",
+            "en": "Bathing spot"
+          },
+          "value": "-"
+        },
+        {
+          "id": "locationId",
+          "type": "label",
+          "label": {
+            "no": "Badeplass-ID",
             "en": "Bathing spot ID"
           },
-          "value": "-",
-          "hint": {
-            "no": "Badeplassens ID",
-            "en": "Bathing spot ID"
-          }
+          "value": "-"
         }
       ]
     },

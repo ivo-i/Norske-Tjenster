@@ -1,79 +1,129 @@
 "use strict"
 
 const { Device } = require("homey")
-const Homey = require("homey")
-const axios = require("axios")
 const moment = require("moment")
-moment.locale("nb")
+const yrWatertemp = require("../../lib/yr-watertemp")
+
+const POLL_INTERVAL_MS = 60 * 60 * 1000
+const RELATIVE_TIME_INTERVAL_MS = 30 * 1000
 
 class Badetemperatur extends Device {
   async onInit() {
     this.homey.app.dDebug("Badetemperatur has been initialized", "Badetemperatur")
 
-    this.spotId = await this.getSetting("spotId")
+    const language = this.homey.i18n.getLanguage()
+    moment.locale(language === "no" ? "nb" : "en")
+
+    this._clearTimers()
+    this.locationId = await this._resolveAndMigrateLocationId()
+
+    if (!this.locationId) {
+      this.homey.app.dError("No bathing spot configured", "Badetemperatur")
+      await this.setUnavailable(this.homey.__("waterTemperature.errors.noSpot"))
+      return
+    }
 
     await this.getTemps()
+
     this.interval = this.homey.setInterval(async () => {
       await this.getTemps()
-    }, 60 * 60 * 1000)
+    }, POLL_INTERVAL_MS)
 
     this.updatedInterval = this.homey.setInterval(async () => {
       await this.updateTimeAgo()
-    }, 30 * 1000)
+    }, RELATIVE_TIME_INTERVAL_MS)
+  }
+
+  async _resolveAndMigrateLocationId() {
+    const settings = await this.getSettings()
+    const locationId = await yrWatertemp.resolveLocationIdFromSettings(settings)
+
+    if (!locationId) {
+      return null
+    }
+
+    if (
+      settings.locationId !== locationId
+      || settings.spotId !== locationId
+      || settings.schemaVersion !== yrWatertemp.SCHEMA_VERSION
+    ) {
+      await this.setSettings({
+        schemaVersion: yrWatertemp.SCHEMA_VERSION,
+        locationId,
+        spotId: locationId,
+      })
+    }
+
+    return locationId
+  }
+
+  async applyBathingSpot(spot) {
+    await this.setSettings({
+      schemaVersion: yrWatertemp.SCHEMA_VERSION,
+      locationId: spot.locationId,
+      spotId: spot.locationId,
+      spotName: spot.name,
+    })
+
+    this.locationId = spot.locationId
+    await this.setCapabilityValue("sensor_watertemp_location", spot.name)
+    await this.getTemps()
   }
 
   async getTemps() {
     const settings = await this.getSettings()
-    console.log(settings)
-    this.homey.app.dDebug(`Getting temperatures for ${this.getName()} (${this.spotId})`, "Badetemperatur")
-    try {
-      // Get the water temperatures for the bathing spot
-      const response = await axios.get(`https://badetemperaturer.yr.no/api/locations/${this.spotId}/watertemperatures`, {
-        headers: {
-          "User-Agent": "Homey-Norske-tjenester/1.0",
-          apikey: Homey.env.YR_KEY,
-          Accept: "application/json",
-        },
-      })
+    this.homey.app.dDebug(`Getting temperatures for ${this.getName()} (${this.locationId})`, "Badetemperatur")
 
-      const bathingSpot = response.data[0]
-      if (!bathingSpot) {
-        this.homey.app.dError(`Could not find bathing spot ${this.spotId}`, "Badetemperatur")
+    try {
+      const reading = await yrWatertemp.fetchLocationReading(this.locationId)
+
+      if (!reading || reading.temperature == null || !reading.time) {
+        this.homey.app.dError(`No temperature data for ${this.locationId}`, "Badetemperatur")
+        await this.setUnavailable(this.homey.__("waterTemperature.errors.noData"))
         return
       }
 
-      this.homey.app.dDebug(`Found bathing spot ${this.getName()} (${this.spotId})`, "Badetemperatur")
-
       this.latestTemps = {
-        ...settings,
-        temperature: bathingSpot.temperature,
-        time: bathingSpot.time,
+        temperature: reading.temperature,
+        time: reading.time,
       }
 
-      await this.setCapabilityValue("sensor_watertemp_location", settings.spotName)
+      await this.setCapabilityValue("sensor_watertemp_location", settings.spotName || this.getName())
       await this.setCapabilityValue("measure_temperature", this.latestTemps.temperature)
-      await this.setCapabilityValue("sensor_watertemp_lastUpdate", moment(this.latestTemps.time).fromNow())
+      await this.setCapabilityValue(
+        "sensor_watertemp_lastUpdate",
+        moment(this.latestTemps.time).fromNow(),
+      )
+      await this.setAvailable()
 
       this.homey.app.dDebug(`Temperatures updated for ${this.getName()}`, "Badetemperatur")
       return this.latestTemps
     } catch (error) {
       this.homey.app.dError(`Error getting temperatures: ${error.message}`, "Badetemperatur")
-      // Set error states for capabilities
-      await this.setCapabilityValue("sensor_watertemp_location", "Kunne ikke hente data")
-      await this.setCapabilityValue("measure_temperature", 0)
-      await this.setCapabilityValue("sensor_watertemp_lastUpdate", "Ukjent")
+      await this.setUnavailable(this.homey.__("waterTemperature.errors.fetchFailed"))
     }
   }
 
   async updateTimeAgo() {
-    if (!this.latestTemps) {
+    if (!this.latestTemps?.time) {
       return
     }
 
-    const lastUpdate = this.latestTemps.time
-    await this.setCapabilityValue("sensor_watertemp_lastUpdate", moment(lastUpdate).fromNow())
+    await this.setCapabilityValue(
+      "sensor_watertemp_lastUpdate",
+      moment(this.latestTemps.time).fromNow(),
+    )
+  }
 
-    return
+  _clearTimers() {
+    if (this.interval) {
+      this.homey.clearInterval(this.interval)
+      this.interval = undefined
+    }
+    if (this.updatedInterval) {
+      this.homey.clearInterval(this.updatedInterval)
+      this.updatedInterval = undefined
+    }
   }
 
   async onAdded() {
@@ -82,6 +132,11 @@ class Badetemperatur extends Device {
 
   async onSettings({ oldSettings, newSettings, changedKeys }) {
     this.homey.app.dDebug(`${this.getName()} settings where changed`, "Badetemperatur")
+
+    if (changedKeys.includes("locationId") || changedKeys.includes("spotId")) {
+      this.locationId = newSettings.locationId || newSettings.spotId
+      await this.getTemps()
+    }
   }
 
   async onRenamed(name) {
@@ -89,9 +144,7 @@ class Badetemperatur extends Device {
   }
 
   async onDeleted() {
-    clearInterval(this.interval)
-    clearInterval(this.updatedInterval)
-
+    this._clearTimers()
     this.homey.app.dDebug(`${this.getName()} has been deleted`, "Badetemperatur")
   }
 }

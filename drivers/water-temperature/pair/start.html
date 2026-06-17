@@ -11,10 +11,13 @@
 </header>
 <fieldset class="homey-form-fieldset">
 	<div id="step1" class="homey-form-group">
-		<label for="region" class="homey-form-label"><span data-i18n="waterTemp.pair.region"></span></label>
+		<label for="region" class="homey-form-label"><span data-i18n="waterTemperature.pair.region"></span></label>
 		<select id="region" style="width: 100%;"></select>
 	</div>
 	<div id="step2" class="homey-form-group" style="display:none;">
+		<label for="changeRegion" class="homey-form-label">
+			<a href="#" id="changeRegion" data-i18n="waterTemperature.pair.changeRegion"></a>
+		</label>
 		<label for="bathingSpot" class="homey-form-label"><span data-i18n="waterTemperature.pair.label"></span></label>
 		<select id="bathingSpot" style="width: 100%;"></select>
 	</div>
@@ -25,19 +28,28 @@
 <script type="application/javascript">
 	Homey.setTitle(Homey.__("waterTemperature.pair.title"));
 	Homey.setSubtitle(Homey.__("waterTemperature.pair.desc"));
-	$(document).ready( function () {
-		setTimeout(function () {
-			let regions;
+	$(document).ready(function () {
+		setTimeout(async function () {
 			let coords;
+			let selectedRegionId;
+			let isRepair = false;
 
-			// Get user's location
+			const t = (key) => Homey.__(`waterTemperature.pair.${key}`);
+
+			try {
+				isRepair = (await Homey.emit('isRepair')) === true;
+			} catch (error) {
+				isRepair = false;
+			}
+
 			Homey.emit('getLocation').then(function (result) {
 				coords = result;
+			}).catch(function () {
+				coords = null;
 			});
 
-			// Haversine formula for calculating distance between two coordinates
 			function haversineDistance(lat1, lon1, lat2, lon2) {
-				const R = 6371; // Radius of Earth in km
+				const R = 6371;
 				const dLat = (lat2 - lat1) * (Math.PI / 180);
 				const dLon = (lon2 - lon1) * (Math.PI / 180);
 				const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
@@ -47,97 +59,130 @@
 				return R * c;
 			}
 
-			// 1. Get regions and initialize region select
+			function showRegionStep() {
+				$('#step2').hide();
+				$('#step1').show();
+				const $bathingSpot = $('#bathingSpot');
+				if ($bathingSpot.hasClass('select2-hidden-accessible')) {
+					$bathingSpot.select2('destroy');
+				}
+				$bathingSpot.empty();
+			}
+
+			$('#changeRegion').on('click', function (event) {
+				event.preventDefault();
+				showRegionStep();
+			});
+
 			Homey.emit("getRegions").then(function (result) {
-				regions = result;
 				$('#region').select2({
-					placeholder: 'Velg region...',
+					placeholder: t('selectRegion'),
 					allowClear: true,
 					data: [
-						{ id: '', text: 'Velg region...' }, // Placeholder option
-						...regions.map(item => ({
+						{ id: '', text: t('selectRegion') },
+						...result.map(item => ({
 							id: item.id,
 							text: item.name
 						}))
 					]
 				});
-				// Ensure the placeholder is selected by default
 				$('#region').val('').trigger('change');
+			}).catch(function (error) {
+				console.error('Error fetching regions:', error);
+				$('#region').append(new Option(t('regionsFailed'), '', true, true));
 			});
 
-			// 2. When region is selected, fetch bathing spots for that region
 			$('#region').on('select2:select', async function (e) {
 				const selectedRegion = e.params.data;
+				if (!selectedRegion.id) {
+					return;
+				}
+
+				selectedRegionId = selectedRegion.id;
 				$('#step1').hide();
 				$('#step2').show();
 
-				// Show loading in bathingSpot select
 				const $bathingSpot = $('#bathingSpot');
-				$bathingSpot.empty().append(new Option('Laster badeplasser...', '', true, true)).trigger('change');
+				if ($bathingSpot.hasClass('select2-hidden-accessible')) {
+					$bathingSpot.select2('destroy');
+				}
+				$bathingSpot.empty().append(new Option(t('loadingSpots'), '', true, true));
 
 				try {
-					Homey.emit("getTemperatures", selectedRegion.id).then(function (tempData) {
+					const tempData = await Homey.emit("getTemperatures", selectedRegion.id);
 					$bathingSpot.empty();
+
 					if (tempData && tempData.length > 0) {
-						$bathingSpot.append(new Option('Velg en badeplass', '', true, true));
+						$bathingSpot.append(new Option(t('selectSpot'), '', true, true));
 						tempData.forEach(spot => {
+							if (!spot?.locationId || !spot?.name) {
+								return;
+							}
+
 							let distanceText = '';
-							if (coords && spot && spot.position.lat && spot.position.lon) {
+							const position = spot.position;
+							if (coords && position?.lat != null && position?.lon != null) {
 								const distance = haversineDistance(
 									coords.lat,
 									coords.lon,
-									spot.position.lat,
-									spot.position.lon
+									position.lat,
+									position.lon
 								);
 								distanceText = ` - ${distance.toFixed(2)} km`;
 							}
+
+							const tempLabel = spot.temperature != null ? `${spot.temperature}°C` : '–';
 							const option = new Option(
-								`${spot.locationName} (${spot.temperature}°C)${distanceText}`,
-								spot.id,
+								`${spot.name} (${tempLabel})${distanceText}`,
+								spot.locationId,
 								false,
 								false
 							);
-							// Store spot data for later use
 							$(option).data('spot', spot);
 							$bathingSpot.append(option);
 						});
 						$bathingSpot.select2({
-							placeholder: 'Velg en badeplass...'
+							placeholder: t('selectSpot')
 						});
 					} else {
-						$bathingSpot.append(new Option('Ingen badeplasser funnet', '', true, true));
+						$bathingSpot.append(new Option(t('noSpots'), '', true, true));
 					}
-				})
 				} catch (error) {
 					console.error('Error fetching water temperatures:', error);
-					$bathingSpot.empty().append(new Option('Kunne ikke hente badeplasser', '', true, true));
+					$bathingSpot.empty().append(new Option(t('spotsFailed'), '', true, true));
 				}
 			});
 
-			// 3. When bathing spot is selected, save it and continue
-			$('#bathingSpot').on('select2:select', async function (e) {
-				const spotId = $(this).val();
+			$('#bathingSpot').on('select2:select', async function () {
 				const option = $(this).find('option:selected');
 				const spot = option.data('spot');
-				if (!spot) return;
+				if (!spot?.locationId || !spot?.name || !spot?.position) {
+					return;
+				}
+
 				const spotData = {
 					id: spot.locationId,
-					name: spot.locationName,
-					county: spot.county,
-					municipality: spot.municipality,
+					name: spot.name,
+					regionId: selectedRegionId,
+					county: spot.regionName || '',
+					municipality: spot.municipalityName || '',
 					position: spot.position,
 					temperature: spot.temperature,
 					time: spot.time,
-					sourceDisplayName: 'yr.no'
+					sourceDisplayName: spot.sourceDisplayName || 'yr.no'
 				};
-			
-			await Homey.emit('saveBathingSpot', spotData);
-			await Homey.emit('list_devices')
-			await Homey.nextView()
-			
-			});
-			
 
-		});
+				await Homey.emit('saveBathingSpot', spotData);
+
+				if (isRepair) {
+					await Homey.done();
+					return;
+				}
+
+				await Homey.emit('list_devices');
+				await Homey.nextView();
+			});
+
+		}, 1000);
 	});
 </script>

@@ -198,9 +198,21 @@
 	"waterTemperature": {
 		"pair": {
 			"title": "Badetemperatur",
-			"desc": "Skriv inn badeplass i feltet under",
-			"label": "Søk etter badeplass",
-			"spot": "Badeplass"
+			"desc": "Velg fylke og badeplass nedenfor",
+			"label": "Velg badeplass",
+			"region": "Velg fylke",
+			"selectRegion": "Velg fylke...",
+			"selectSpot": "Velg en badeplass...",
+			"changeRegion": "Velg et annet fylke",
+			"loadingSpots": "Laster badeplasser...",
+			"noSpots": "Ingen badeplasser funnet",
+			"regionsFailed": "Kunne ikke hente fylker",
+			"spotsFailed": "Kunne ikke hente badeplasser"
+		},
+		"errors": {
+			"noSpot": "Ingen badeplass er konfigurert",
+			"noData": "Ingen badetemperatur tilgjengelig",
+			"fetchFailed": "Kunne ikke hente badetemperatur"
 		}
 	},
     "airQuality": {
